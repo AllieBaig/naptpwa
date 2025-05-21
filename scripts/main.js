@@ -72,3 +72,63 @@ function setupErrorLogButton() {
 setupErrorLogButton();
 
 
+
+
+// MIT License
+// Copyright (c) 2025 AllieBaig
+// Licensed under the MIT License.
+// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
+
+// <----------------- before this line - Dev mode URL + password protected error log button
+
+import renderErrorLog from './utils/errorLog.js';
+import { initErrorLogging } from './utils/errorHandler.js';
+
+initErrorLogging();
+
+function setupErrorLogButton() {
+  const btn = document.createElement('button');
+  btn.textContent = 'Error Log (Dev)';
+  btn.style.position = 'fixed';
+  btn.style.bottom = '1rem';
+  btn.style.right = '1rem';
+  btn.style.zIndex = '9999';
+  btn.style.padding = '0.5rem 1rem';
+  btn.style.background = '#222';
+  btn.style.color = '#eee';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '0.3rem';
+  btn.style.cursor = 'pointer';
+
+  btn.addEventListener('click', () => {
+    const password = prompt('Enter developer password:');
+    const correctPassword = 'YOUR_SECRET_PASSWORD'; // CHANGE THIS before deployment
+
+    if (password === correctPassword) {
+      const main = document.querySelector('main');
+      if (!main) return;
+      main.innerHTML = '';
+      renderErrorLog(main);
+    } else {
+      alert('Incorrect password');
+    }
+  });
+
+  document.body.appendChild(btn);
+}
+
+function setupErrorLogButtonIfDevMode() {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('dev') === 'true') {
+    setupErrorLogButton();
+  }
+}
+
+setupErrorLogButtonIfDevMode();
+
+
+
+
+
+
+
