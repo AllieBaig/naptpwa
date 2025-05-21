@@ -1,35 +1,52 @@
-/*
-MIT License
+// MIT License
+// Copyright (c) 2025 AllieBaig
+// Licensed under the MIT License.
+// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
-Copyright (c) 2025 AllieBaig
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-export function init({ showMenu }) {
-  const gameSection = document.getElementById('game');
-  gameSection.innerHTML = `
-    <h2>Word Relic</h2>
-    <p>Word Relic mode.</p>
-    <button id="backBtn">Back to Menu</button>
+export default async function init({ showMenu }) {
+  // <----------------- before this line - Initialize Word Relic mode UI
+  const gameContainer = document.getElementById('game');
+  gameContainer.innerHTML = `
+    <section class="word-relic">
+      <h2>Word Relic</h2>
+      <p>Guess the 4 related words from clues.</p>
+      <div id="relic-clues" class="clue-list"></div>
+      <input type="text" id="user-answer" placeholder="Your answer..." />
+      <button id="submit-answer">Submit</button>
+      <div id="relic-feedback"></div>
+      <button id="back-btn">Back to Menu</button>
+    </section>
   `;
-  gameSection.classList.add('active');
+
   document.getElementById('menu').classList.remove('active');
-  document.getElementById('backBtn').addEventListener('click', showMenu);
+  gameContainer.classList.add('active');
+
+  // <----------------- before this line - Game logic and mock data
+  const clues = ['Shiny', 'Ancient', 'Unearthed', 'Mysterious'];
+  const correctAnswer = 'relic';
+  const clueContainer = document.getElementById('relic-clues');
+
+  clues.forEach((clue, index) => {
+    const clueEl = document.createElement('p');
+    clueEl.textContent = `Clue ${index + 1}: ${clue}`;
+    clueContainer.appendChild(clueEl);
+  });
+
+  // <----------------- before this line - Event handling
+  document.getElementById('submit-answer').addEventListener('click', () => {
+    const userInput = document.getElementById('user-answer').value.trim().toLowerCase();
+    const feedback = document.getElementById('relic-feedback');
+    if (userInput === correctAnswer) {
+      feedback.textContent = 'Correct! You discovered the relic!';
+      feedback.style.color = 'green';
+    } else {
+      feedback.textContent = 'Incorrect. Try again!';
+      feedback.style.color = 'red';
+    }
+  });
+
+  document.getElementById('back-btn').addEventListener('click', () => {
+    showMenu();
+  });
 }
+
