@@ -4,11 +4,11 @@
 // See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
 const modeMap = {
-  regular: './modes/regular.js',
-  wordRelic: './modes/wordRelic.js',
-  wordSafari: './modes/safari.js',
-  dice: './modes/dice.js',
-  atlas: './modes/atlas.js',
+  regular: './scripts/modes/regular.js',
+  wordRelic: './scripts/modes/wordRelic.js',
+  wordSafari: './scripts/modes/safari.js',
+  dice: './scripts/modes/dice.js',
+  atlas: './scripts/modes/atlas.js',
 };
 
 function showError(message) {
