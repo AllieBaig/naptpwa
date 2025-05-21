@@ -1,43 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Word Game PWA</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles/main.css">
-  <script defer type="module" src="scripts/main.js"></script>
-  </head>
-
-  <!-- This is an HTML comment -->
-  <!--
-  <head>
+<head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#333" />
+  <meta name="theme-color" content="#0055aa" />
+  <meta name="description" content="NAPT Word Game - A modular, multi-mode PWA" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles/style.css" />
-  <link rel="icon" href="assets/icons/icon-192.png" />
-  <title>Word Game PWA</title>
-  </head>
-  -->
-  
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <title>NAPT Word Game</title>
+</head>
 <body>
-  <main>
-    <section id="menu" class="screen active">
-      <h1>Word Game</h1>
-      <button data-mode="regular">Regular Game</button>
-      <button data-mode="wordRelic">Word Relic</button>
-      <button data-mode="safari">Word Safari</button>
-      <button data-mode="dice">Dice Challenge</button>
-      <button data-mode="atlas">Word Atlas</button>
-    </section>
+  <header>
+    <h1>NAPT Word Game</h1>
+    <p>Select a mode to begin</p>
+  </header>
 
-    <section id="game" class="screen"></section>
+  <main>
+    <button class="menu-btn" data-mode="regular">Regular Game</button>
+    <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
+    <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
+    <button class="menu-btn" data-mode="dice">Dice Challenge</button>
+    <button class="menu-btn" data-mode="atlas">Word Atlas</button>
   </main>
 
-  <script type="module" src="scripts/main.js"></script>
-  <script src="scripts/serviceWorkerRegistration.js" defer></script>
+  <script type="module" src="scripts/gameNavigation.js"></script>
+  <script src="scripts/serviceWorkerRegistration.js"></script>
 </body>
 </html>
+
