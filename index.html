@@ -2,22 +2,22 @@
 <html lang="en">
 <head>
   <!-- MIT License
-  Copyright (c) 2025 AllieBaig
-  Licensed under the MIT License.
-  See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
-  -->
+       Copyright (c) 2025 AllieBaig
+       Licensed under the MIT License.
+       See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details. -->
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0055aa" />
   <meta name="description" content="NAPT Word Game - A modular, multi-mode PWA" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles/main.css" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
   <title>NAPT Word Game</title>
 
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link rel="stylesheet" href="styles/main.css" />
+
   <style>
-    /* Critical CSS: essential styles for initial render */
+    /* Critical CSS */
     body {
       font-family: system-ui, sans-serif;
       margin: 0;
@@ -33,14 +33,6 @@
       color: white;
     }
 
-    #menu, #game {
-      display: none;
-    }
-
-    #menu.active, #game.active {
-      display: block;
-    }
-
     main {
       padding: 1rem;
       display: flex;
@@ -54,7 +46,6 @@
       font-size: 1.2rem;
       padding: 1rem;
       width: 100%;
-      max-width: 100%;
       background: #0055aa;
       color: white;
       border: none;
@@ -78,32 +69,42 @@
         max-width: 300px;
       }
     }
+
+    .game-container {
+      padding: 1rem;
+      max-width: 800px;
+      margin: auto;
+      display: none;
+    }
+
+    .active {
+      display: block !important;
+    }
   </style>
 </head>
-
 <body>
   <header>
     <h1>NAPT Word Game</h1>
     <p>Select a mode to begin</p>
   </header>
 
-  <div id="menu" class="active">
-    <main>
-      <button class="menu-btn" data-mode="regular">Regular Game</button>
-      <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
-      <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
-      <button class="menu-btn" data-mode="dice">Dice Challenge</button>
-      <button class="menu-btn" data-mode="atlas">Word Atlas</button>
-    </main>
-  </div>
+  <main>
+    <button class="menu-btn" data-mode="regular">Regular Game</button>
+    <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
+    <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
+    <button class="menu-btn" data-mode="dice">Dice Challenge</button>
+    <button class="menu-btn" data-mode="atlas">Word Atlas</button>
+  </main>
 
-  <div id="game" class=""></div>
+  <div id="game" class="game-container"></div>
 
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
+
   <script type="module">
     import { injectResetPWA } from './scripts/utils/debugTools.js';
     injectResetPWA();
   </script>
 </body>
 </html>
+
