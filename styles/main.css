@@ -1,104 +1,54 @@
-/* Base Styles and Resets */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* <----------------- before this line - Responsive layout styles */
+
+body {
+  font-family: system-ui, sans-serif;
   margin: 0;
   padding: 0;
-}
-
-html {
-  font-size: 16px;
-  line-height: 1.5;
-  font-family: system-ui, sans-serif;
-  background-color: #f9f9f9;
+  background: #fafafa;
   color: #222;
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+header {
+  text-align: center;
   padding: 1rem;
-}
-
-/* Headings */
-h1 {
-  font-size: 2rem;
-  font-weight: bold;
-  margin: 1rem 0;
-}
-
-h2 {
-  font-size: 1.5rem;
-  margin: 1rem 0 0.5rem;
-}
-
-h3 {
-  font-size: 1.2rem;
-  margin: 0.75rem 0 0.5rem;
-}
-
-/* Layout and Responsiveness */
-#menu,
-#game {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-}
-
-#menu.active,
-#game.active {
-  display: flex;
-}
-
-button {
-  padding: 0.5rem 1rem;
-  margin: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 0.25rem;
-  background-color: #007acc;
+  background-color: #333;
   color: white;
 }
 
+main {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 800px;
+  margin: auto;
+}
+
+button, .menu-btn {
+  font-size: 1.2rem;
+  padding: 1rem;
+  width: 100%;
+  max-width: 100%;
+  background: #0055aa;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  transition: background 0.3s;
+}
+
 button:hover {
-  background-color: #005fa3;
+  background: #004080;
 }
 
-@media (max-width: 600px) {
-  h1 {
-    font-size: 1.5rem;
-  }
-  h2 {
-    font-size: 1.25rem;
-  }
-  button {
-    font-size: 0.9rem;
-  }
-}
-
-/* Accessibility */
-button:focus {
-  outline: 2px dashed #007acc;
-  outline-offset: 2px;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    background-color: #121212;
-    color: #f5f5f5;
+@media (min-width: 600px) {
+  main {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 
   button {
-    background-color: #1e88e5;
-    color: white;
-  }
-
-  button:hover {
-    background-color: #1565c0;
+    flex: 1 1 40%;
+    max-width: 300px;
   }
 }
-
-
