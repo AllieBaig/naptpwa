@@ -23,11 +23,11 @@ SOFTWARE.
 */
 
 const modeMap = {
-  regular: './scripts/modes/regular.js',
-  wordRelic: './scripts/modes/wordRelic.js',
-  safari: './scripts/modes/safari.js',
-  dice: './scripts/modes/dice.js',
-  atlas: './scripts/modes/atlas.js',
+  regular: './modes/regular.js',
+  wordRelic: './modes/wordRelic.js',
+  safari: './modes/safari.js',
+  dice: './modes/dice.js',
+  atlas: './modes/atlas.js',
 };
 
 export function showMenu() {
