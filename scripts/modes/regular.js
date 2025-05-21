@@ -7,11 +7,19 @@ const STORAGE_PREFIX = 'napt-regular-';
 const todayDate = new Date().toISOString().slice(0, 10);
 const todayKey = `${STORAGE_PREFIX}${todayDate}`;
 
-export default function init({ showMenu }) {
+
+
+export function init({ showMenu }) {
+  const container = document.getElementById('game');
+  container.innerHTML = '';
+
+
+/*export default function init({ showMenu }) {
   const gameArea = document.getElementById('game');
   if (!gameArea) return;
-
   gameArea.innerHTML = `
+  */
+  
     <section class="game-section">
       <h2>📝 Regular Mode</h2>
       <form id="regular-form" class="regular-form">
