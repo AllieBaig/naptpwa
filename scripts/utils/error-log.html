@@ -48,24 +48,18 @@
   <a href="../index.html" aria-label="Back to main app">← Back to Main App</a>
 
   <script type="module">
-    import renderErrorLog from './errorLog.js';  // <------------ correct relative path from utils folder
+    import renderErrorLog from './errorLog.js';  // correct relative path from utils folder
 
     (async () => {
       const container = document.getElementById('error-log-container');
       container.innerHTML = '';
 
-      const password = prompt('Enter developer password to view error log:');
-      const correctPassword = '123@space123@'; // CHANGE THIS!
-
-      if (password === correctPassword) {
-        try {
-          await renderErrorLog(container);
-        } catch (err) {
-          container.textContent = 'Failed to load error log: ' + err.message;
-          console.error(err);
-        }
-      } else {
-        container.textContent = 'Incorrect password. Access denied.';
+      try {
+        // Directly render error log without password check
+        await renderErrorLog(container);
+      } catch (err) {
+        container.textContent = 'Failed to load error log: ' + err.message;
+        console.error(err);
       }
     })();
   </script>
