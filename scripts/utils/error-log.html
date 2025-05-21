@@ -1,67 +1,41 @@
+<!--
+MIT License
+Copyright (c) 2025 AllieBaig
+See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Error Log - NAPTPWA</title>
-  <meta name="description" content="Error log for NAPTPWA by AllieBaig" />
+  <title>Error Log - Word Game PWA</title>
   <style>
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 1rem;
-      background: #111;
-      color: #eee;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    main {
-      flex-grow: 1;
-      overflow-y: auto;
-      max-width: 900px;
-      margin: 0 auto;
-      background: #222;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 0 15px rgba(0,0,0,0.7);
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-    a {
-      color: #66aaff;
-      text-decoration: none;
-      margin-top: 1rem;
-      align-self: center;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
+    body { font-family: Arial, sans-serif; margin: 1rem; background: #f9f9f9; color: #222; }
+    h1 { margin-bottom: 1rem; }
+    #errorList { list-style-type: none; padding-left: 0; }
+    #errorList li { background: #fff; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 5px; box-shadow: 0 0 3px #ccc; font-family: monospace; white-space: pre-wrap; }
+    button { margin-top: 1rem; padding: 0.5rem 1rem; }
   </style>
 </head>
 <body>
-  <h1>Error Log - NAPTPWA</h1>
-  <main id="error-log-container">
-    <p>Loading...</p>
-  </main>
-  <a href="../index.html" aria-label="Back to main app">← Back to Main App</a>
+  <h1>Error Log</h1>
+  <ul id="errorList"></ul>
+  <button id="clearErrorLog">Clear Error Log</button>
 
-  <script type="module">
-    import renderErrorLog from './errorLog.js';  // correct relative path from utils folder
+  <script>
+    const ul = document.getElementById('errorList');
+    const errors = JSON.parse(localStorage.getItem('appErrorLog') || '[]');
+    errors.forEach(err => {
+      const li = document.createElement('li');
+      li.textContent = `[${err.time}] ${err.message}\nFile: ${err.filename || '-'}:${err.lineno || '-'}:${err.colno || '-'}\nStack: ${err.stack || 'N/A'}`;
+      ul.appendChild(li);
+    });
 
-    (async () => {
-      const container = document.getElementById('error-log-container');
-      container.innerHTML = '';
-
-      try {
-        // Directly render error log without password check
-        await renderErrorLog(container);
-      } catch (err) {
-        container.textContent = 'Failed to load error log: ' + err.message;
-        console.error(err);
-      }
-    })();
+    document.getElementById('clearErrorLog').onclick = () => {
+      localStorage.removeItem('appErrorLog');
+      location.reload();
+    };
   </script>
 </body>
 </html>
