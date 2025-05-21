@@ -1,41 +1,112 @@
-<!--
-MIT License
-Copyright (c) 2025 AllieBaig
-See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Error Log - Word Game PWA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Error Log Viewer</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 1rem; background: #f9f9f9; color: #222; }
-    h1 { margin-bottom: 1rem; }
-    #errorList { list-style-type: none; padding-left: 0; }
-    #errorList li { background: #fff; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 5px; box-shadow: 0 0 3px #ccc; font-family: monospace; white-space: pre-wrap; }
-    button { margin-top: 1rem; padding: 0.5rem 1rem; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f8f8f8;
+      color: #333;
+      padding: 2em;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .error-log {
+      max-height: 400px;
+      overflow-y: auto;
+      background: #111;
+      color: #eee;
+      padding: 1em;
+      border-radius: 0.5em;
+      font-family: monospace;
+    }
+
+    .error-entry {
+      margin-bottom: 1em;
+      border-bottom: 1px solid #444;
+      padding-bottom: 0.5em;
+    }
+
+    .error-entry pre {
+      white-space: pre-wrap;
+    }
+
+    button {
+      padding: 0.5em 1em;
+      background-color: #c00;
+      color: white;
+      border: none;
+      border-radius: 0.25em;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #a00;
+    }
+
+    .timestamp {
+      font-style: italic;
+      font-size: 0.9em;
+      color: #ccc;
+    }
   </style>
 </head>
 <body>
-  <h1>Error Log</h1>
-  <ul id="errorList"></ul>
-  <button id="clearErrorLog">Clear Error Log</button>
+  <h2 id="logTitle">Error Log</h2>
+  <button id="clearErrorLogBtn">Clear Log</button>
+  <div id="errorLogContainer" class="error-log"></div>
 
-  <script>
-    const ul = document.getElementById('errorList');
-    const errors = JSON.parse(localStorage.getItem('appErrorLog') || '[]');
-    errors.forEach(err => {
-      const li = document.createElement('li');
-      li.textContent = `[${err.time}] ${err.message}\nFile: ${err.filename || '-'}:${err.lineno || '-'}:${err.colno || '-'}\nStack: ${err.stack || 'N/A'}`;
-      ul.appendChild(li);
+  <script type="module">
+    import { getErrorLog, clearErrorLog } from './errorHandler.js';
+
+    const container = document.getElementById('errorLogContainer');
+    const title = document.getElementById('logTitle');
+    const button = document.getElementById('clearErrorLogBtn');
+
+    function escapeHTML(str) {
+      return String(str).replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[ch]));
+    }
+
+    function render() {
+      const errors = getErrorLog();
+      title.textContent = `Error Log (${errors.length} entr${errors.length === 1 ? 'y' : 'ies'})`;
+
+      if (errors.length === 0) {
+        container.innerHTML = '<p>No errors logged.</p>';
+        return;
+      }
+
+      container.innerHTML = errors.map(e => `
+        <div class="error-entry">
+          <strong>${escapeHTML(e.type || 'Error').toUpperCase()}:</strong>
+          ${escapeHTML(e.message)}<br />
+          <small>${escapeHTML(e.source || '')} [${e.lineno || ''}:${e.colno || ''}]</small><br />
+          <pre>${escapeHTML(e.stack || '')}</pre>
+          <div class="timestamp">${escapeHTML(e.time)}</div>
+        </div>
+      `).join('');
+    }
+
+    button.addEventListener('click', () => {
+      if (confirm('Clear all stored error logs?')) {
+        clearErrorLog();
+        render();
+      }
     });
 
-    document.getElementById('clearErrorLog').onclick = () => {
-      localStorage.removeItem('appErrorLog');
-      location.reload();
-    };
+    render();
   </script>
 </body>
 </html>
+
