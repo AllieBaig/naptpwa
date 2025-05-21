@@ -1,0 +1,77 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Error Log - NAPTPWA</title>
+  <meta name="description" content="Error log for NAPTPWA by AllieBaig" />
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 1rem;
+      background: #111;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    main {
+      flex-grow: 1;
+      overflow-y: auto;
+      max-width: 900px;
+      margin: 0 auto;
+      background: #222;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    a {
+      color: #66aaff;
+      text-decoration: none;
+      margin-top: 1rem;
+      align-self: center;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <h1>Error Log - NAPTPWA</h1>
+  <main id="error-log-container">
+    <p>Loading...</p>
+  </main>
+  <a href="index.html" aria-label="Back to main app">← Back to Main App</a>
+
+  <script type="module">
+    import renderErrorLog from './scripts/utils/errorLog.js';
+
+    (async () => {
+      const container = document.getElementById('error-log-container');
+      container.innerHTML = '';
+
+      const password = prompt('Enter developer password to view error log:');
+      const correctPassword = 'YOUR_SECRET_PASSWORD'; // CHANGE THIS!
+
+      if (password === correctPassword) {
+        try {
+          await renderErrorLog(container);
+        } catch (err) {
+          container.textContent = 'Failed to load error log: ' + err.message;
+          console.error(err);
+        }
+      } else {
+        container.textContent = 'Incorrect password. Access denied.';
+      }
+    })();
+  </script>
+</body>
+</html>
