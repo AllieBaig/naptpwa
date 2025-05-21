@@ -1,4 +1,4 @@
-import { getErrorLog, clearErrorLog } from './modules.js';
+import { getErrorLog, clearErrorLog } from './utils/modules.js';
 
 export function renderErrorLog(container) {
   if (!container) {
