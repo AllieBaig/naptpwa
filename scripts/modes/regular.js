@@ -1,35 +1,62 @@
-/*
-MIT License
+// MIT License
+// Copyright (c) 2025 AllieBaig
+// Licensed under the MIT License.
+// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
-Copyright (c) 2025 AllieBaig
+export default function init({ showMenu }) {
+  const gameArea = document.getElementById('game');
+  if (!gameArea) return;
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-export function init({ showMenu }) {
-  const gameSection = document.getElementById('game');
-  gameSection.innerHTML = `
-    <h2>Regular Game</h2>
-    <p>Regular Game mode.</p>
-    <button id="backBtn">Back to Menu</button>
+  gameArea.innerHTML = `
+    <section class="game-section">
+      <h2>Regular Mode</h2>
+      <form id="regular-form" class="regular-form">
+        <label>
+          Name: <input type="text" name="name" required />
+        </label>
+        <label>
+          Place: <input type="text" name="place" required />
+        </label>
+        <label>
+          Animal: <input type="text" name="animal" required />
+        </label>
+        <label>
+          Thing: <input type="text" name="thing" required />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
+      <button class="back-btn">Back to Menu</button>
+      <div id="regular-feedback" class="feedback"></div>
+    </section>
   `;
-  gameSection.classList.add('active');
-  document.getElementById('menu').classList.remove('active');
-  document.getElementById('backBtn').addEventListener('click', showMenu);
+
+  const form = document.getElementById('regular-form');
+  const feedback = document.getElementById('regular-feedback');
+  const backBtn = document.querySelector('.back-btn');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const name = formData.get('name').trim();
+    const place = formData.get('place').trim();
+    const animal = formData.get('animal').trim();
+    const thing = formData.get('thing').trim();
+
+    if (name && place && animal && thing) {
+      feedback.textContent = `You entered: ${name}, ${place}, ${animal}, ${thing}`;
+      feedback.style.color = 'green';
+    } else {
+      feedback.textContent = 'Please fill in all fields.';
+      feedback.style.color = 'red';
+    }
+  });
+
+  backBtn.addEventListener('click', () => {
+    showMenu();
+  });
+
+  // Activate game view
+  document.querySelector('main')?.classList.remove('active');
+  gameArea.classList.add('active');
 }
+
