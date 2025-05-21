@@ -1,54 +1,62 @@
-/*
-MIT License
+// MIT License © AllieBaig
+// Word Atlas Mode – Location-aware prompts + global answers
 
-Copyright (c) 2025 AllieBaig
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-export function init({ showMenu }) {
-  const gameSection = document.getElementById('game');
-  gameSection.innerHTML = `
-    <h2>Word Atlas</h2>
-    <p>Word Atlas mode.</p>
-    <button id="backBtn">Back to Menu</button>
-  `;
-  gameSection.classList.add('active');
-  document.getElementById('menu').classList.remove('active');
-  document.getElementById('backBtn').addEventListener('click', showMenu);
-}
-
-
+// Import helper functions
 import { getUserLocation } from '../utils/location.js';
+import { saveDailyAnswer } from '../utils/storage.js';
 
+// <----------------- before this line - Initialize mode entry point
 export default async function init() {
-  document.getElementById('mode-container').innerHTML = `<h2>Word Atlas</h2>`;
+  // <----------------- before this line - Inject base UI
+  const container = document.getElementById('mode-container');
+  container.innerHTML = `<h2>🌍 Word Atlas</h2>`;
+
+  const todayLetter = new Date().toDateString()[0].toUpperCase();
 
   try {
+    // <----------------- before this line - Try to get user's geolocation
     const coords = await getUserLocation();
-    const letter = new Date().toDateString()[0].toUpperCase();
-    const prompt = `Name a place near you starting with “${letter}”`;
 
-    document.getElementById('mode-container').innerHTML += `<p>${prompt}</p>`;
+    // <----------------- before this line - Generate prompt using location and letter
+    const prompt = `Place near you starting with “${todayLetter}”`;
+    container.innerHTML += `<p>${prompt}</p>`;
+
+    // <----------------- before this line - Inject input and buttons
+    container.innerHTML += `
+      <input type="text" id="atlasAnswer" placeholder="Your answer..." />
+      <button id="submitAnswer">Submit</button>
+      <button id="showAnswers">Show World Answers</button>
+      <div id="globalAnswers"></div>
+    `;
+
+    // <----------------- before this line - Submit button handler
+    document.getElementById('submitAnswer').onclick = () => {
+      const answer = document.getElementById('atlasAnswer').value.trim();
+      if (answer) {
+        saveDailyAnswer('atlas', answer);
+        container.innerHTML += `<p>Saved: ${answer}</p>`;
+      }
+    };
+
+    // <----------------- before this line - Show World Answers button handler
+    document.getElementById('showAnswers').onclick = () => {
+      const answers = ['Madrid', 'Moscow', 'Manila'];
+      const html = answers.map(a =>
+        `<li><span class="word" data-word="${a}">${a}</span> 
+         <img src="https://flagcdn.com/w40/es.png" alt="Flag" /></li>`
+      ).join('');
+      document.getElementById('globalAnswers').innerHTML = `<ul>${html}</ul>`;
+    };
+
   } catch (err) {
-    document.getElementById('mode-container').innerHTML += `<p>Location access denied. Try offline prompt.</p>`;
+    // <----------------- before this line - Fallback if geolocation fails
+    const fallbackPrompts = [
+      'Place starting with A',
+      'Country ending in N',
+      'City with 5 letters'
+    ];
+    const fallback = fallbackPrompts[Math.floor(Math.random() * fallbackPrompts.length)];
+    container.innerHTML += `<p>${fallback} (offline)</p>`;
   }
 }
-
 
