@@ -52,3 +52,18 @@ button:hover {
     max-width: 300px;
   }
 }
+
+
+
+
+/* <----------------- before this line - Error log UI styles */
+.error-list pre {
+  font-size: 0.85rem;
+  background: #222;
+  padding: 0.5em;
+  border-radius: 0.3em;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
