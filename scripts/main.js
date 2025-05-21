@@ -96,6 +96,18 @@ function createPwaResetButton() {
     }
   });
 
+  /*
+MIT License
+Copyright (c) 2025 AllieBaig
+See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+*/
+
+import { initErrorLogging } from './utils/error-handler.js';
+
+initErrorLogging();
+
+// Your existing main.js code here...
+
   document.body.appendChild(btn);
 }
 
