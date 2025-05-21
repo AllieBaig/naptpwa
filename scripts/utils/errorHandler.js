@@ -1,63 +1,40 @@
+/*
+MIT License
+Copyright (c) 2025 AllieBaig
+See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+*/
 
-// MIT License
-// Copyright (c) 2025 AllieBaig
-// Licensed under the MIT License.
-// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
-
-// <----------------- before this line - Centralized client-side error handling
-
-const ERROR_STORAGE_KEY = 'naptpwa_error_log';
-
-function getStoredErrors() {
-  try {
-    const stored = localStorage.getItem(ERROR_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-}
-
-function storeError(errorEntry) {
-  const errors = getStoredErrors();
-  errors.push(errorEntry);
-  if (errors.length > 100) errors.shift();
-  localStorage.setItem(ERROR_STORAGE_KEY, JSON.stringify(errors));
-}
+// Error logging utility to capture and store errors in localStorage
 
 export function initErrorLogging() {
   window.addEventListener('error', event => {
-    const err = event.error || {};
-    const errorEntry = {
-      message: err.message || event.message || 'Unknown error',
-      source: event.filename || 'unknown source',
-      lineno: event.lineno || 0,
-      colno: event.colno || 0,
-      stack: err.stack || 'no stack',
+    const log = JSON.parse(localStorage.getItem('appErrorLog') || '[]');
+
+    log.push({
       time: new Date().toISOString(),
-      type: 'error',
-    };
-    storeError(errorEntry);
-    console.error('Logged error:', errorEntry);
+      message: event.message,
+      filename: event.filename,
+      lineno: event.lineno,
+      colno: event.colno,
+      stack: event.error ? event.error.stack : null,
+    });
+
+    if (log.length > 50) log.shift();
+
+    localStorage.setItem('appErrorLog', JSON.stringify(log));
   });
 
   window.addEventListener('unhandledrejection', event => {
-    const reason = event.reason || {};
-    const errorEntry = {
-      message: reason.message || String(reason) || 'Unhandled rejection',
-      stack: reason.stack || 'no stack',
+    const log = JSON.parse(localStorage.getItem('appErrorLog') || '[]');
+
+    log.push({
       time: new Date().toISOString(),
-      type: 'unhandledrejection',
-    };
-    storeError(errorEntry);
-    console.error('Logged unhandled rejection:', errorEntry);
+      message: event.reason ? event.reason.message || event.reason : 'Unhandled rejection',
+      stack: event.reason ? event.reason.stack : null,
+    });
+
+    if (log.length > 50) log.shift();
+
+    localStorage.setItem('appErrorLog', JSON.stringify(log));
   });
 }
-
-export function getErrorLog() {
-  return getStoredErrors();
-}
-
-export function clearErrorLog() {
-  localStorage.removeItem(ERROR_STORAGE_KEY);
-}
-
