@@ -7,13 +7,22 @@
   <style>
     body {
       font-family: system-ui, sans-serif;
-      background: #f8f8f8;
+      background: #f9f9f9;
       color: #333;
       padding: 2em;
+      line-height: 1.5;
     }
 
     h2 {
       margin-top: 0;
+    }
+
+    .controls {
+      margin-bottom: 1em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      align-items: center;
     }
 
     .error-log {
@@ -36,17 +45,17 @@
       white-space: pre-wrap;
     }
 
-    button {
+    button, select {
       padding: 0.5em 1em;
-      background-color: #c00;
+      background-color: #333;
       color: white;
       border: none;
       border-radius: 0.25em;
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: #a00;
+    button:hover, select:hover {
+      background-color: #555;
     }
 
     .timestamp {
@@ -57,55 +66,11 @@
   </style>
 </head>
 <body>
-  <h2 id="logTitle">Error Log</h2>
-  <button id="clearErrorLogBtn">Clear Log</button>
-  <div id="errorLogContainer" class="error-log"></div>
+  <div id="errorLogModuleContainer"></div>
 
   <script type="module">
-    import { getErrorLog, clearErrorLog } from './errorHandler.js';
-
-    const container = document.getElementById('errorLogContainer');
-    const title = document.getElementById('logTitle');
-    const button = document.getElementById('clearErrorLogBtn');
-
-    function escapeHTML(str) {
-      return String(str).replace(/[&<>"']/g, ch => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;'
-      }[ch]));
-    }
-
-    function render() {
-      const errors = getErrorLog();
-      title.textContent = `Error Log (${errors.length} entr${errors.length === 1 ? 'y' : 'ies'})`;
-
-      if (errors.length === 0) {
-        container.innerHTML = '<p>No errors logged.</p>';
-        return;
-      }
-
-      container.innerHTML = errors.map(e => `
-        <div class="error-entry">
-          <strong>${escapeHTML(e.type || 'Error').toUpperCase()}:</strong>
-          ${escapeHTML(e.message)}<br />
-          <small>${escapeHTML(e.source || '')} [${e.lineno || ''}:${e.colno || ''}]</small><br />
-          <pre>${escapeHTML(e.stack || '')}</pre>
-          <div class="timestamp">${escapeHTML(e.time)}</div>
-        </div>
-      `).join('');
-    }
-
-    button.addEventListener('click', () => {
-      if (confirm('Clear all stored error logs?')) {
-        clearErrorLog();
-        render();
-      }
-    });
-
-    render();
+    import { renderErrorLog } from './errorLog.js';
+    renderErrorLog(document.getElementById('errorLogModuleContainer'));
   </script>
 </body>
 </html>
