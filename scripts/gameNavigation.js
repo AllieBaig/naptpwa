@@ -1,78 +1,44 @@
-/*
-MIT License
-Copyright (c) 2025 AllieBaig
-Full license: https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
-*/
+// MIT License
+// Copyright (c) 2025 AllieBaig
+// Licensed under the MIT License.
+// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
 const modeMap = {
-  regular: './modes/regular.js',
-  wordRelic: './modes/wordRelic.js',
-  safari: './modes/safari.js',
-  dice: './modes/dice.js',
-  atlas: './modes/atlas.js',
+  regular: './scripts/modes/regular.js',
+  wordRelic: './scripts/modes/wordRelic.js',
+  wordSafari: './scripts/modes/safari.js',
+  dice: './scripts/modes/dice.js',
+  atlas: './scripts/modes/atlas.js',
 };
 
-const menuEl = document.getElementById('menu');     // <---- make sure these IDs exist in your HTML
-const gameEl = document.getElementById('game');
-
-let currentModule = null;
-
-// Show main menu, hide game container, hide back button
 export function showMenu() {
-  if (menuEl) menuEl.classList.add('active');
+  document.getElementById('menu')?.classList.add('active');
+  const gameEl = document.getElementById('game');
   if (gameEl) {
     gameEl.classList.remove('active');
     gameEl.innerHTML = '';
   }
-  hideBackButton();
 }
 
-// Show back button
-function showBackButton() {
-  let backBtn = document.getElementById('backToMenu');
-  if (!backBtn) {
-    backBtn = document.createElement('button');
-    backBtn.id = 'backToMenu';
-    backBtn.textContent = 'Back to Menu';
-    backBtn.style.margin = '1em';
-    backBtn.addEventListener('click', () => {
-      if (currentModule && currentModule.cleanup) {
-        currentModule.cleanup();
-      }
-      showMenu();
-      currentModule = null;
-    });
-    document.body.insertBefore(backBtn, gameEl);
-  }
-  backBtn.style.display = 'inline-block';
-}
-
-// Hide back button
-function hideBackButton() {
-  const backBtn = document.getElementById('backToMenu');
-  if (backBtn) backBtn.style.display = 'none';
-}
-
-// Load and initialize the selected mode
 export async function navigateToMode(mode) {
-  if (!modeMap[mode]) return console.error(`Mode ${mode} not found`);
+  if (!modeMap[mode]) {
+    console.error(`Mode ${mode} not found`);
+    return;
+  }
   try {
-    if (menuEl) menuEl.classList.remove('active');
-    if (gameEl) {
-      gameEl.classList.add('active');
-      gameEl.innerHTML = '';
-    }
-    showBackButton();
-
-    currentModule = await import(modeMap[mode]);
-    if (currentModule && typeof currentModule.init === 'function') {
-      await currentModule.init({ container: gameEl, showMenu });
-    } else {
-      console.error(`Mode ${mode} does not export init function`);
-    }
-  } catch (error) {
-    console.error('Error loading mode:', error);
-    alert('Failed to load game mode. Please try again.');
-    showMenu();
+    const module = await import(modeMap[mode]);
+    module.init?.({ showMenu });
+  } catch (err) {
+    console.error(`Failed to load mode "${mode}"`, err);
   }
 }
+
+// Attach event listeners after DOM is loaded
+window.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.menu-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-mode');
+      navigateToMode(mode);
+    });
+  });
+});
