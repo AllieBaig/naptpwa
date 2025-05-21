@@ -33,3 +33,22 @@ export function init({ showMenu }) {
   document.getElementById('menu').classList.remove('active');
   document.getElementById('backBtn').addEventListener('click', showMenu);
 }
+
+
+import { getUserLocation } from '../utils/location.js';
+
+export default async function init() {
+  document.getElementById('mode-container').innerHTML = `<h2>Word Atlas</h2>`;
+
+  try {
+    const coords = await getUserLocation();
+    const letter = new Date().toDateString()[0].toUpperCase();
+    const prompt = `Name a place near you starting with “${letter}”`;
+
+    document.getElementById('mode-container').innerHTML += `<p>${prompt}</p>`;
+  } catch (err) {
+    document.getElementById('mode-container').innerHTML += `<p>Location access denied. Try offline prompt.</p>`;
+  }
+}
+
+
