@@ -102,7 +102,7 @@ Copyright (c) 2025 AllieBaig
 See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 */
 
-import { initErrorLogging } from './utils/error-handler.js';
+import { initErrorLogging } from './scripts/utils/error-handler.js';
 
 initErrorLogging();
 
