@@ -4,41 +4,77 @@
 // See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
 const modeMap = {
-  regular: './scripts/modes/regular.js',
-  wordRelic: './scripts/modes/wordRelic.js',
-  wordSafari: './scripts/modes/safari.js',
-  dice: './scripts/modes/dice.js',
-  atlas: './scripts/modes/atlas.js',
+  regular: './modes/regular.js',
+  wordRelic: './modes/wordRelic.js',
+  wordSafari: './modes/safari.js',
+  dice: './modes/dice.js',
+  atlas: './modes/atlas.js',
 };
 
-export function showMenu() {
-  document.getElementById('menu')?.classList.add('active');
-  const gameEl = document.getElementById('game');
-  if (gameEl) {
-    gameEl.classList.remove('active');
-    gameEl.innerHTML = '';
+function showError(message) {
+  let errorBox = document.getElementById('mode-error-box');
+  if (!errorBox) {
+    errorBox = document.createElement('div');
+    errorBox.id = 'mode-error-box';
+    errorBox.style = `
+      background: #ffe0e0;
+      color: #900;
+      padding: 1rem;
+      margin: 1rem auto;
+      text-align: center;
+      border: 1px solid #f88;
+      border-radius: 0.5rem;
+      max-width: 600px;
+      font-weight: bold;
+    `;
+    document.body.insertBefore(errorBox, document.body.firstChild);
   }
+  errorBox.textContent = message;
+}
+
+export function showMenu() {
+  const menu = document.querySelector('main');
+  const game = document.getElementById('game');
+
+  menu?.classList.add('active');
+  game?.classList.remove('active');
+  if (game) game.innerHTML = '';
+
+  // Clear error feedback
+  const errorBox = document.getElementById('mode-error-box');
+  if (errorBox) errorBox.remove();
 }
 
 export async function navigateToMode(mode) {
-  if (!modeMap[mode]) {
-    console.error(`Mode ${mode} not found`);
+  const modulePath = modeMap[mode];
+
+  if (!modulePath) {
+    showError(`Unknown game mode: "${mode}". Please select a valid option.`);
+    console.error(`Unknown game mode: ${mode}`);
     return;
   }
+
   try {
-    const module = await import(modeMap[mode]);
-    module.init?.({ showMenu });
+    const module = await import(modulePath);
+    module.init({ showMenu });
   } catch (err) {
-    console.error(`Failed to load mode "${mode}"`, err);
+    showError(`Failed to load "${mode}" mode. Please try again or reload.`);
+    console.error(`Error loading mode "${mode}"`, err);
   }
 }
 
-// Attach event listeners after DOM is loaded
-window.addEventListener('DOMContentLoaded', () => {
-  document.querySelectorAll('.menu-btn').forEach((btn) => {
+document.addEventListener('DOMContentLoaded', () => {
+  const buttons = document.querySelectorAll('.menu-btn');
+  const gameContainer = document.createElement('div');
+  gameContainer.id = 'game';
+  gameContainer.classList.add('game-container');
+  document.body.appendChild(gameContainer);
+
+  buttons.forEach(btn => {
     btn.addEventListener('click', () => {
       const mode = btn.getAttribute('data-mode');
       navigateToMode(mode);
     });
   });
 });
+
