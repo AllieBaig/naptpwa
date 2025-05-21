@@ -5,8 +5,8 @@
 
 // <----------------- before this line - Main app bootstrap with error log and PWA reset buttons
 
-import renderErrorLog from './utils/errorLog.js';
-import { initErrorLogging } from './utils/errorHandler.js';
+import renderErrorLog from './scripts/utils/errorLog.js';
+import { initErrorLogging } from './scripts/utils/errorHandler.js';
 
 initErrorLogging();
 
