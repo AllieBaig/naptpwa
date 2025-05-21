@@ -1,35 +1,111 @@
-/*
-MIT License
+// MIT License
+// Copyright (c) 2025 AllieBaig
+// Licensed under the MIT License.
+// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
-Copyright (c) 2025 AllieBaig
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+const STORAGE_KEY = 'dice_challenge_history';
 
 export function init({ showMenu }) {
-  const gameSection = document.getElementById('game');
-  gameSection.innerHTML = `
-    <h2>Dice Challenge</h2>
-    <p>Dice Challenge mode.</p>
-    <button id="backBtn">Back to Menu</button>
-  `;
-  gameSection.classList.add('active');
-  document.getElementById('menu').classList.remove('active');
-  document.getElementById('backBtn').addEventListener('click', showMenu);
+  const container = document.getElementById('game');
+  container.innerHTML = '';
+
+  const backButton = document.createElement('button');
+  backButton.textContent = '◀️ Back to Menu';
+  backButton.addEventListener('click', showMenu);
+  container.appendChild(backButton);
+
+  const title = document.createElement('h2');
+  title.textContent = '🎲 Dice Challenge';
+  container.appendChild(title);
+
+  const result = document.createElement('p');
+  result.style.fontSize = '2rem';
+  result.style.margin = '1rem 0';
+  result.textContent = 'Roll the dice!';
+  container.appendChild(result);
+
+  const rollButton = document.createElement('button');
+  rollButton.textContent = 'Roll Dice';
+  rollButton.style.fontSize = '1.5rem';
+  rollButton.addEventListener('click', () => {
+    const roll = Math.floor(Math.random() * 6) + 1;
+    result.textContent = `You rolled: ${getDiceEmoji(roll)} (${roll})`;
+    recordToday();
+    updateStatsUI(statsContainer);
+  });
+
+  container.appendChild(rollButton);
+
+  const statsContainer = document.createElement('div');
+  statsContainer.style.marginTop = '1rem';
+  container.appendChild(statsContainer);
+  updateStatsUI(statsContainer);
+
+  container.classList.add('active');
 }
+
+function getDiceEmoji(number) {
+  const diceEmojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
+  return diceEmojis[number - 1] || '?';
+}
+
+function getTodayDate() {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+}
+
+function loadHistory() {
+  try {
+    const data = localStorage.getItem(STORAGE_KEY);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(history) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+  } catch {
+    // storage full or disabled
+  }
+}
+
+function recordToday() {
+  const history = loadHistory();
+  const today = getTodayDate();
+  if (!history.includes(today)) {
+    history.push(today);
+    saveHistory(history);
+  }
+}
+
+function calculateStreak(history) {
+  const today = new Date();
+  let streak = 0;
+
+  for (let i = 0; i < 7; i++) {
+    const checkDate = new Date(today);
+    checkDate.setDate(today.getDate() - i);
+    const key = checkDate.toISOString().split('T')[0];
+    if (history.includes(key)) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
+}
+
+function updateStatsUI(container) {
+  const history = loadHistory();
+  const streak = calculateStreak(history);
+  const last7 = history.slice(-7).join(', ') || 'None';
+
+  container.innerHTML = `
+    <p><strong>🔥 Weekly Streak:</strong> ${streak} day(s)</p>
+    <p><strong>📅 Recent Plays:</strong> ${last7}</p>
+  `;
+}
+
