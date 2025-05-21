@@ -1,25 +1,7 @@
 /*
 MIT License
-
 Copyright (c) 2025 AllieBaig
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Full license: https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 */
 
 const modeMap = {
@@ -30,14 +12,67 @@ const modeMap = {
   atlas: './modes/atlas.js',
 };
 
+const menuEl = document.getElementById('menu');     // <---- make sure these IDs exist in your HTML
+const gameEl = document.getElementById('game');
+
+let currentModule = null;
+
+// Show main menu, hide game container, hide back button
 export function showMenu() {
-  document.getElementById('menu').classList.add('active');
-  document.getElementById('game').classList.remove('active');
-  document.getElementById('game').innerHTML = '';
+  if (menuEl) menuEl.classList.add('active');
+  if (gameEl) {
+    gameEl.classList.remove('active');
+    gameEl.innerHTML = '';
+  }
+  hideBackButton();
 }
 
+// Show back button
+function showBackButton() {
+  let backBtn = document.getElementById('backToMenu');
+  if (!backBtn) {
+    backBtn = document.createElement('button');
+    backBtn.id = 'backToMenu';
+    backBtn.textContent = 'Back to Menu';
+    backBtn.style.margin = '1em';
+    backBtn.addEventListener('click', () => {
+      if (currentModule && currentModule.cleanup) {
+        currentModule.cleanup();
+      }
+      showMenu();
+      currentModule = null;
+    });
+    document.body.insertBefore(backBtn, gameEl);
+  }
+  backBtn.style.display = 'inline-block';
+}
+
+// Hide back button
+function hideBackButton() {
+  const backBtn = document.getElementById('backToMenu');
+  if (backBtn) backBtn.style.display = 'none';
+}
+
+// Load and initialize the selected mode
 export async function navigateToMode(mode) {
   if (!modeMap[mode]) return console.error(`Mode ${mode} not found`);
-  const module = await import(modeMap[mode]);
-  module.init({ showMenu });
+  try {
+    if (menuEl) menuEl.classList.remove('active');
+    if (gameEl) {
+      gameEl.classList.add('active');
+      gameEl.innerHTML = '';
+    }
+    showBackButton();
+
+    currentModule = await import(modeMap[mode]);
+    if (currentModule && typeof currentModule.init === 'function') {
+      await currentModule.init({ container: gameEl, showMenu });
+    } else {
+      console.error(`Mode ${mode} does not export init function`);
+    }
+  } catch (error) {
+    console.error('Error loading mode:', error);
+    alert('Failed to load game mode. Please try again.');
+    showMenu();
+  }
 }
