@@ -1,65 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- MIT License
+  Copyright (c) 2025 AllieBaig
+  Licensed under the MIT License.
+  See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
+  -->
 
-  <style>
-  /* Critical CSS: essential styles for initial render */
-
-body {
-  font-family: system-ui, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #fafafa;
-  color: #222;
-}
-
-header {
-  text-align: center;
-  padding: 1rem;
-  background-color: #333;
-  color: white;
-}
-
-main {
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  max-width: 800px;
-  margin: auto;
-}
-
-button, .menu-btn {
-  font-size: 1.2rem;
-  padding: 1rem;
-  width: 100%;
-  max-width: 100%;
-  background: #0055aa;
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background: #004080;
-}
-
-/* Minimal media query for layout adjustment on wider screens */
-@media (min-width: 600px) {
-  main {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  button {
-    flex: 1 1 40%;
-    max-width: 300px;
-  }
-}
-  </style>
-  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0055aa" />
@@ -68,29 +15,95 @@ button:hover {
   <link rel="stylesheet" href="styles/main.css" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
   <title>NAPT Word Game</title>
+
+  <style>
+    /* Critical CSS: essential styles for initial render */
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      color: #222;
+    }
+
+    header {
+      text-align: center;
+      padding: 1rem;
+      background-color: #333;
+      color: white;
+    }
+
+    #menu, #game {
+      display: none;
+    }
+
+    #menu.active, #game.active {
+      display: block;
+    }
+
+    main {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    button, .menu-btn {
+      font-size: 1.2rem;
+      padding: 1rem;
+      width: 100%;
+      max-width: 100%;
+      background: #0055aa;
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #004080;
+    }
+
+    @media (min-width: 600px) {
+      main {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      button {
+        flex: 1 1 40%;
+        max-width: 300px;
+      }
+    }
+  </style>
 </head>
+
 <body>
   <header>
     <h1>NAPT Word Game</h1>
     <p>Select a mode to begin</p>
   </header>
 
-  <main>
-    <button class="menu-btn" data-mode="regular">Regular Game</button>
-    <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
-    <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
-    <button class="menu-btn" data-mode="dice">Dice Challenge</button>
-    <button class="menu-btn" data-mode="atlas">Word Atlas</button>
-  </main>
+  <div id="menu" class="active">
+    <main>
+      <button class="menu-btn" data-mode="regular">Regular Game</button>
+      <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
+      <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
+      <button class="menu-btn" data-mode="dice">Dice Challenge</button>
+      <button class="menu-btn" data-mode="atlas">Word Atlas</button>
+    </main>
+  </div>
+
+  <div id="game" class=""></div>
 
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
-  
   <script type="module">
-  import { injectResetPWA } from './scripts/utils/debugTools.js';
-  injectResetPWA();
-</script>
-  
+    import { injectResetPWA } from './scripts/utils/debugTools.js';
+    injectResetPWA();
+  </script>
 </body>
 </html>
-
