@@ -40,7 +40,6 @@ export function showMenu() {
   game?.classList.remove('active');
   if (game) game.innerHTML = '';
 
-  // Clear error feedback
   const errorBox = document.getElementById('mode-error-box');
   if (errorBox) errorBox.remove();
 }
@@ -65,10 +64,6 @@ export async function navigateToMode(mode) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const buttons = document.querySelectorAll('.menu-btn');
-  const gameContainer = document.createElement('div');
-  gameContainer.id = 'game';
-  gameContainer.classList.add('game-container');
-  document.body.appendChild(gameContainer);
 
   buttons.forEach(btn => {
     btn.addEventListener('click', () => {
