@@ -1,0 +1,8 @@
+{
+  "safari": {
+    "categories": ["Animals", "Cities", "Colors"]
+  },
+  "dice": {
+    "challenges": ["Start with a vowel", "Ends in -ing", "3+ syllables"]
+  }
+}
