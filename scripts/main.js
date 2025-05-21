@@ -1,91 +1,16 @@
-/*
-MIT License
-
-Copyright (c) 2025 AllieBaig
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
-
-import { navigateToMode, showMenu } from './gameNavigation.js';
-
-document.querySelectorAll('#menu button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const mode = btn.dataset.mode;
-    navigateToMode(mode);
-  });
-});
-
-
-
-
 // MIT License
 // Copyright (c) 2025 AllieBaig
 // Licensed under the MIT License.
 // See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
-import { initErrorLogging } from './utils/errorHandler.js';
-import renderErrorLog from './utils/errorLog.js';
-
-// <----------------- before this line - Initialize error logging
-initErrorLogging();
-
-function setupErrorLogButton() {
-  const btn = document.createElement('button');
-  btn.textContent = 'Error Log (Dev)';
-  btn.style.position = 'fixed';
-  btn.style.bottom = '1rem';
-  btn.style.right = '1rem';
-  btn.style.zIndex = '9999';
-  btn.style.padding = '0.5rem 1rem';
-  btn.style.background = '#222';
-  btn.style.color = '#eee';
-  btn.style.border = 'none';
-  btn.style.borderRadius = '0.3rem';
-  btn.style.cursor = 'pointer';
-
-  btn.addEventListener('click', () => {
-    const main = document.querySelector('main');
-    if (!main) return;
-    main.innerHTML = '';
-    renderErrorLog(main);
-  });
-
-  document.body.appendChild(btn);
-}
-
-setupErrorLogButton();
-
-
-
-
-// MIT License
-// Copyright (c) 2025 AllieBaig
-// Licensed under the MIT License.
-// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
-
-// <----------------- before this line - Dev mode URL + password protected error log button
+// <----------------- before this line - Main app bootstrap with error log and PWA reset buttons
 
 import renderErrorLog from './utils/errorLog.js';
 import { initErrorLogging } from './utils/errorHandler.js';
 
 initErrorLogging();
 
+/* ----------- Dev mode error log button (password protected) ----------- */
 function setupErrorLogButton() {
   const btn = document.createElement('button');
   btn.textContent = 'Error Log (Dev)';
@@ -126,9 +51,55 @@ function setupErrorLogButtonIfDevMode() {
 
 setupErrorLogButtonIfDevMode();
 
+/* ----------- User-facing PWA Reset Button ----------- */
+function createPwaResetButton() {
+  const btn = document.createElement('button');
+  btn.textContent = 'PWA not working? Click here to reset';
+  btn.style.position = 'fixed';
+  btn.style.bottom = '4rem';
+  btn.style.right = '1rem';
+  btn.style.zIndex = '10000';
+  btn.style.padding = '0.6rem 1rem';
+  btn.style.background = '#b33';
+  btn.style.color = 'white';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '0.4rem';
+  btn.style.cursor = 'pointer';
+  btn.style.fontSize = '0.9rem';
+  btn.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
 
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.textContent = 'Resetting PWA...';
 
+    try {
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      }
 
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        for (const cacheName of cacheNames) {
+          await caches.delete(cacheName);
+        }
+      }
 
+      btn.textContent = 'Reset done! Reloading...';
+      setTimeout(() => location.reload(), 1500);
+    } catch (e) {
+      console.error('PWA reset failed:', e);
+      btn.textContent = 'Reset failed, check console';
+      btn.disabled = false;
+    }
+  });
 
+  document.body.appendChild(btn);
+}
 
+createPwaResetButton();
+
+/* ----------- Other app init code here ----------- */
+// ... your existing main.js initialization logic ...
