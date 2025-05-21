@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Error Log Viewer</title>
   <style>
     body {
@@ -17,15 +17,20 @@
       margin-top: 0;
     }
 
-    .controls {
-      margin-bottom: 1em;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1em;
-      align-items: center;
+    button {
+      padding: 0.5em 1em;
+      background-color: #333;
+      color: white;
+      border: none;
+      border-radius: 0.25em;
+      cursor: pointer;
     }
 
-    .error-log {
+    button:hover {
+      background-color: #555;
+    }
+
+    .error-list {
       max-height: 400px;
       overflow-y: auto;
       background: #111;
@@ -45,19 +50,6 @@
       white-space: pre-wrap;
     }
 
-    button, select {
-      padding: 0.5em 1em;
-      background-color: #333;
-      color: white;
-      border: none;
-      border-radius: 0.25em;
-      cursor: pointer;
-    }
-
-    button:hover, select:hover {
-      background-color: #555;
-    }
-
     .timestamp {
       font-style: italic;
       font-size: 0.9em;
@@ -69,8 +61,15 @@
   <div id="errorLogModuleContainer"></div>
 
   <script type="module">
-    import { renderErrorLog } from './errorLog.js';
+    import { renderErrorLog, initErrorLogging } from './modules.js';
+
+    initErrorLogging();
     renderErrorLog(document.getElementById('errorLogModuleContainer'));
+
+    // Optional: refresh the error log every minute (real-time update)
+    setInterval(() => {
+      renderErrorLog(document.getElementById('errorLogModuleContainer'));
+    }, 60000);
   </script>
 </body>
 </html>
