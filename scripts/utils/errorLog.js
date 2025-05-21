@@ -2,7 +2,7 @@
 // Copyright (c) 2025 AllieBaig
 // https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
-import { getErrorLog, clearErrorLog } from './naptpwa/scripts/utils/errorHandler.js';
+import { getErrorLog, clearErrorLog } from './errorHandler.js';
 
 export function renderErrorLog(container, options = {}) {
   if (!container) {
