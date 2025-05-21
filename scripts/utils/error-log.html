@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Error Log Viewer</title>
   <style>
+    /* All existing CSS from your original file is good and remains here */
     body {
       font-family: system-ui, sans-serif;
       background: #f9f9f9;
@@ -15,6 +16,7 @@
 
     h2 {
       margin-top: 0;
+      color: #d33; /* Make the title stand out a bit */
     }
 
     button {
@@ -24,6 +26,7 @@
       border: none;
       border-radius: 0.25em;
       cursor: pointer;
+      margin-bottom: 1em; /* Add some space below the button */
     }
 
     button:hover {
@@ -38,6 +41,7 @@
       padding: 1em;
       border-radius: 0.5em;
       font-family: monospace;
+      white-space: pre-wrap; /* Ensure pre-wrap for code blocks inside list */
     }
 
     .error-entry {
@@ -46,30 +50,87 @@
       padding-bottom: 0.5em;
     }
 
+    .error-entry:last-child {
+        border-bottom: none; /* No border for the last entry */
+    }
+
     .error-entry pre {
       white-space: pre-wrap;
+      word-break: break-word; /* Ensure long lines break */
+      background: #222; /* Slightly different background for pre tags */
+      padding: 0.5em;
+      border-radius: 0.25em;
+      margin-top: 0.5em;
+      color: #c7c7c7; /* Lighter color for stack traces */
     }
 
     .timestamp {
       font-style: italic;
       font-size: 0.9em;
-      color: #ccc;
+      color: #aaa;
+      display: block; /* Make timestamp on its own line */
+      margin-top: 0.5em;
     }
   </style>
 </head>
 <body>
-  <div id="errorLogModuleContainer"></div>
+  <h2>Application Error Log</h2>
+  <div id="errorLogContainer">
+    <p>Loading error log...</p>
+  </div>
 
   <script type="module">
-    import { renderErrorLog, initErrorLogging } from './scripts/utils/modules.js';
+    // Import necessary functions from errorHandler.js
+    import { getErrorLog, clearErrorLog } from './errorHandler.js';
 
-    initErrorLogging();
-    renderErrorLog(document.getElementById('errorLogModuleContainer'));
+    /**
+     * Renders the error log into the designated container element.
+     */
+    function displayErrorLog() {
+      const container = document.getElementById('errorLogContainer');
+      if (!container) {
+        console.error('Error: Error log container (#errorLogContainer) not found.');
+        return;
+      }
 
-    // Optional: refresh the error log every minute (real-time update)
-    setInterval(() => {
-      renderErrorLog(document.getElementById('errorLogModuleContainer'));
-    }, 60000);
+      const errors = getErrorLog(); // Retrieve current error log entries
+
+      // Construct the HTML content for the error log viewer
+      container.innerHTML = `
+        <h3>Log Entries (${errors.length} total)</h3>
+        <button id="clearErrorLogBtn">Clear Log</button>
+        <div class="error-list">
+          ${errors.length === 0
+            ? '<p>No errors logged yet. Keep building!</p>' // Message if no errors
+            : errors.map(e => `
+                <div class="error-entry">
+                  <strong>Type:</strong> <span style="color: ${e.type === 'unhandledrejection' ? '#f90' : '#d33'};">${(e.type || 'ERROR').toUpperCase()}</span><br/>
+                  <strong>Message:</strong> ${e.message || 'No message provided'}<br/>
+                  ${e.source || e.lineno || e.colno ?
+                    `<small><strong>Source:</strong> ${e.source || 'N/A'}${e.lineno ? ` [Line: ${e.lineno}, Col: ${e.colno}]` : ''}</small><br/>`
+                    : ''}
+                  ${e.stack ? `<pre>${e.stack}</pre>` : ''}
+                  <em class="timestamp">Logged: ${new Date(e.time).toLocaleString()}</em>
+                </div>
+              `).join('')
+          }
+        </div>
+      `;
+
+      // Attach event listener to the "Clear Log" button
+      const clearButton = document.getElementById('clearErrorLogBtn');
+      if (clearButton) {
+        clearButton.addEventListener('click', () => {
+          if (confirm('Are you sure you want to clear all stored error logs? This cannot be undone.')) {
+            clearErrorLog();      // Clear errors from local storage
+            displayErrorLog();    // Re-render the log to show it's empty
+          }
+        });
+      }
+    }
+
+    // Call displayErrorLog once the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', displayErrorLog);
   </script>
 </body>
 </html>
