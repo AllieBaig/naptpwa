@@ -1,10 +1,12 @@
-
 // MIT License
 // Copyright (c) 2025 AllieBaig
 // Licensed under the MIT License.
 // See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
 export function injectResetPWA() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has('debug')) return;
+
   const link = document.createElement('a');
   link.href = '#';
   link.textContent = 'PWA not working? Click here to reset';
