@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,10 +45,10 @@
   <main id="error-log-container">
     <p>Loading...</p>
   </main>
-  <a href="index.html" aria-label="Back to main app">← Back to Main App</a>
+  <a href="../index.html" aria-label="Back to main app">← Back to Main App</a>
 
   <script type="module">
-    import renderErrorLog from './scripts/utils/errorLog.js';
+    import renderErrorLog from './errorLog.js';  // <------------ correct relative path from utils folder
 
     (async () => {
       const container = document.getElementById('error-log-container');
