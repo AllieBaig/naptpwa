@@ -7,7 +7,7 @@ import { saveLastMode } from './utils/autosave.js';
 const modeMap = {
   regular: './modes/regular.js',
   wordRelic: './modes/wordRelic.js',
-  wordSafari: './modes/safari.js',
+  wordSafari: './modes/wordSafari.js',
   dice: './modes/dice.js',
   atlas: './modes/atlas.js',
   versus: './modes/versus.js'
@@ -37,18 +37,18 @@ function showError(message) {
 export function showMenu() {
   const menu = document.querySelector('main');
   const game = document.getElementById('game');
+  const settings = document.getElementById('settings-panel');
+  const errorLink = document.getElementById('error-viewer-link');
+
   menu?.classList.add('active');
   game?.classList.remove('active');
-  if (game) game.innerHTML = '';
+  game.innerHTML = '';
+
+  if (settings) settings.style.display = '';
+  if (errorLink) errorLink.style.display = 'block';
 
   const errorBox = document.getElementById('mode-error-box');
   if (errorBox) errorBox.remove();
-
-  const settings = document.getElementById('settings-panel');
-  if (settings) settings.style.display = '';
-
-  const errorLink = document.getElementById('error-viewer-link');
-  if (errorLink) errorLink.style.display = 'block';
 }
 
 export async function navigateToMode(mode) {
@@ -61,14 +61,18 @@ export async function navigateToMode(mode) {
   try {
     const module = await import(path);
     module.init({ showMenu });
-
     saveLastMode(mode);
 
+    const menu = document.querySelector('main');
+    const game = document.getElementById('game');
     const settings = document.getElementById('settings-panel');
-    if (settings) settings.style.display = 'none';
-
     const errorLink = document.getElementById('error-viewer-link');
+
+    if (menu) menu.classList.remove('active');
+    if (game) game.classList.add('active');
+    if (settings) settings.style.display = 'none';
     if (errorLink) errorLink.style.display = 'none';
+
   } catch (err) {
     console.error(`Failed to load mode "${mode}"`, err);
     showError(`Failed to load "${mode}" mode. Please try again or reload.`);
