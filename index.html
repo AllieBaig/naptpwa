@@ -9,7 +9,7 @@
   <meta name="description" content="NAPT Word Game - Modular PWA" />
   <title>NAPT Word Game</title>
 
-  <!-- Preload user settings before paint -->
+  <!-- Preload visual preferences -->
   <script>
     (() => {
       const root = document.documentElement;
@@ -23,10 +23,8 @@
     })();
   </script>
 
-  <!-- Google Fonts -->
+  <!-- Fonts and Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
-
-  <!-- Styles -->
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles/main.css" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
@@ -39,7 +37,6 @@
   </header>
 
   <div id="app-grid">
-    <!-- Mode Buttons -->
     <main id="menu" class="active">
       <div class="mode-buttons">
         <button class="menu-btn" data-mode="regular">🧠 Solo Mode</button>
@@ -50,12 +47,12 @@
         <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
       </div>
 
-      <!-- Settings -->
+      <!-- Settings Panel -->
       <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
         <summary style="cursor: pointer; font-weight: bold;">⚙️ Settings</summary>
         <div style="margin-top: 1rem;">
           <label for="fontSelector"><strong>Font:</strong></label><br/>
-          <select id="fontSelector" style="margin: 0.5rem 0; padding: 0.5rem;">
+          <select id="fontSelector">
             <option value="">System Default</option>
             <option value="domine">Domine</option>
             <option value="merriweather">Merriweather</option>
@@ -64,7 +61,7 @@
           </select>
 
           <label for="themeSelector"><strong>Theme:</strong></label><br/>
-          <select id="themeSelector" style="margin: 0.5rem 0; padding: 0.5rem;">
+          <select id="themeSelector">
             <option value="system">System Default</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
@@ -72,9 +69,10 @@
 
           <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
           <label><input type="checkbox" id="voiceHelpToggle" /> Voice Instructions</label><br/>
+          <label><input type="checkbox" id="resumeToggle" /> Resume Last Game on Load</label><br/>
 
           <label for="difficultySelector"><strong>Difficulty:</strong></label><br/>
-          <select id="difficultySelector" style="margin: 0.5rem 0; padding: 0.5rem;">
+          <select id="difficultySelector">
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
             <option value="hard">Hard</option>
@@ -83,7 +81,6 @@
       </details>
     </main>
 
-    <!-- Game Mode Content -->
     <div id="game" class="game-container"></div>
   </div>
 
@@ -93,9 +90,18 @@
   <script type="module">
     import { applyUserSettings } from './scripts/utils/settings.js';
     import { injectResetPWA } from './scripts/utils/debugTools.js';
+    import { getLastMode } from './scripts/utils/autosave.js';
+    import { navigateToMode } from './scripts/gameNavigation.js';
 
     applyUserSettings();
     injectResetPWA();
+
+    const shouldResume = localStorage.getItem('napt-resume') === 'true';
+    const lastMode = getLastMode();
+
+    if (shouldResume && lastMode) {
+      navigateToMode(lastMode);
+    }
   </script>
 </body>
 </html>
