@@ -3,12 +3,13 @@
 // https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
 import { saveLastMode } from './utils/autosave.js';
+import { resetGameContainer } from './utils/gameUI.js';
 import { versionMap } from './utils/version.js';
 
 const modeMap = {
   regular: './modes/regular.js',
   wordRelic: './modes/wordRelic.js',
-  wordSafari: './modes/safari.js',
+  wordSafari: './modes/wordSafari.js',
   dice: './modes/dice.js',
   atlas: './modes/atlas.js',
   versus: './modes/versus.js'
@@ -51,7 +52,7 @@ export function showMenu() {
   const errorBox = document.getElementById('mode-error-box');
   if (errorBox) errorBox.remove();
 
-  window.__LAST_LOADED_VERSION = `mainMenu (menu view)`;
+  window.__LAST_LOADED_VERSION = 'mainMenu';
 }
 
 export async function navigateToMode(mode) {
@@ -63,21 +64,17 @@ export async function navigateToMode(mode) {
 
   try {
     const module = await import(path);
+    resetGameContainer(); // clean slate before mode loads
     module.init({ showMenu });
+
     saveLastMode(mode);
 
-    const menu = document.querySelector('main');
-    const game = document.getElementById('game');
     const settings = document.getElementById('settings-panel');
     const errorLink = document.getElementById('error-viewer-link');
-
-    menu?.classList.remove('active');
-    game?.classList.add('active');
     settings?.style.setProperty('display', 'none');
     errorLink?.style.setProperty('display', 'none');
 
-    // Update version info for logging
-    window.__LAST_LOADED_VERSION = `${mode}.js ${versionMap[mode] || 'v?'} (loaded)`;
+    window.__LAST_LOADED_VERSION = `${mode}.js ${versionMap[mode] || 'v?'}`;
   } catch (err) {
     console.error(`Failed to load mode "${mode}"`, err);
     showError(`Failed to load "${mode}" mode. Please try again or reload.`);
@@ -107,7 +104,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Mark version for initial state
   window.__LAST_LOADED_VERSION = `gameNavigation.js ${versionMap.gameNavigation}`;
 });
-
