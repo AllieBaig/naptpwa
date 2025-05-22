@@ -1,86 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- MIT License
-       Copyright (c) 2025 AllieBaig
-       Licensed under the MIT License.
-       See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details. -->
+  <!-- MIT License — AllieBaig — https://github.com/AllieBaig/naptpwa/blob/main/LICENSE -->
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0055aa" />
-  <meta name="description" content="NAPT Word Game - A modular, multi-mode PWA" />
+  <meta name="description" content="NAPT Word Game - Modular PWA" />
   <title>NAPT Word Game</title>
 
+  <!-- Font options -->
+  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
   <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
   <link rel="stylesheet" href="styles/main.css" />
-
-  <style>
-    /* Critical CSS */
-    body {
-      font-family: system-ui, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      color: #222;
-    }
-
-    header {
-      text-align: center;
-      padding: 1rem;
-      background-color: #333;
-      color: white;
-    }
-
-    main {
-      padding: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      max-width: 800px;
-      margin: auto;
-    }
-
-    button, .menu-btn {
-      font-size: 1.2rem;
-      padding: 1rem;
-      width: 100%;
-      background: #0055aa;
-      color: white;
-      border: none;
-      border-radius: 0.5rem;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: #004080;
-    }
-
-    @media (min-width: 600px) {
-      main {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
-
-      button {
-        flex: 1 1 40%;
-        max-width: 300px;
-      }
-    }
-
-    .game-container {
-      padding: 1rem;
-      max-width: 800px;
-      margin: auto;
-      display: none;
-    }
-
-    .active {
-      display: block !important;
-    }
-  </style>
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
 </head>
 <body>
   <header>
@@ -88,23 +23,66 @@
     <p>Select a mode to begin</p>
   </header>
 
-  <main>
-    <button class="menu-btn" data-mode="regular">Regular Game</button>
-    <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
-    <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
-    <button class="menu-btn" data-mode="dice">Dice Challenge</button>
-    <button class="menu-btn" data-mode="atlas">Word Atlas</button>
-  </main>
+  <div id="app-grid">
+    <!-- Game Mode Menu -->
+    <main id="menu" class="active">
+      <div class="mode-buttons">
+        <button class="menu-btn" data-mode="regular">Regular Game</button>
+        <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
+        <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
+        <button class="menu-btn" data-mode="dice">Dice Challenge</button>
+        <button class="menu-btn" data-mode="atlas">Word Atlas</button>
+      </div>
 
-  <div id="game" class="game-container"></div>
+      <!-- Settings Panel -->
+      <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
+        <summary style="cursor: pointer; font-weight: bold;">⚙️ Settings</summary>
+        <div style="margin-top: 1rem;">
+          <label for="fontSelector"><strong>Choose Font:</strong></label><br/>
+          <select id="fontSelector" style="margin-top: 0.5rem; padding: 0.5rem;">
+            <option value="">System Default</option>
+            <option value="domine">Domine</option>
+            <option value="merriweather">Merriweather</option>
+            <option value="lora">Lora</option>
+            <option value="tinos">Tinos</option>
+          </select>
+        </div>
+      </details>
+    </main>
 
+    <!-- Game Mode Output -->
+    <div id="game" class="game-container"></div>
+  </div>
+
+  <!-- Modules -->
   <script type="module" src="scripts/gameNavigation.js"></script>
-   <script type="module" src="/utils/errorLog.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
-
   <script type="module">
     import { injectResetPWA } from './scripts/utils/debugTools.js';
     injectResetPWA();
+  </script>
+
+  <!-- Font selector script -->
+  <script>
+    const fontSelector = document.getElementById('fontSelector');
+    const storedFont = localStorage.getItem('napt-font');
+    const fontClasses = ['font-domine', 'font-merriweather', 'font-lora', 'font-tinos'];
+
+    if (storedFont) {
+      document.body.classList.add(`font-${storedFont}`);
+      fontSelector.value = storedFont;
+    }
+
+    fontSelector.addEventListener('change', () => {
+      document.body.classList.remove(...fontClasses);
+      const selected = fontSelector.value;
+      if (selected) {
+        document.body.classList.add(`font-${selected}`);
+        localStorage.setItem('napt-font', selected);
+      } else {
+        localStorage.removeItem('napt-font');
+      }
+    });
   </script>
 </body>
 </html>
