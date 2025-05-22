@@ -5,10 +5,13 @@
 import { updateStreakUI } from '../utils/streak.js';
 import { saveHistoryEntry, renderHistoryList } from '../utils/history.js';
 import { applyFontControls } from '../utils/fontControls.js';
+import { versionMap } from '../utils/version.js';
 
 export function init({ showMenu }) {
   const game = document.getElementById('game');
   if (!game) return;
+
+  window.__LAST_LOADED_VERSION = `regular.js ${versionMap.regular}`;
 
   game.innerHTML = `
     <h2>🧠 Solo Mode</h2>
@@ -38,36 +41,34 @@ export function init({ showMenu }) {
     <button class="back-btn" style="margin-top: 1.5rem;">◀️ Back to Menu</button>
   `;
 
-  // Font controls
-  const fontControls = document.getElementById('fontControls');
-  applyFontControls(fontControls);
+  // Controls
+  applyFontControls(document.getElementById('fontControls'));
 
-  // Form logic
   const form = document.getElementById('solo-form');
   const feedback = document.getElementById('solo-feedback');
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(form));
-    const allFilled = Object.values(data).every(val => val.trim());
+    const formData = new FormData(form);
+    const entryData = Object.fromEntries(formData.entries());
+    const complete = Object.values(entryData).every(val => val.trim());
 
-    if (allFilled) {
-      const entry = `${data.name}, ${data.place}, ${data.animal}, ${data.thing}`;
-      feedback.textContent = `✅ You entered: ${entry}`;
+    if (complete) {
+      const combined = `${entryData.name}, ${entryData.place}, ${entryData.animal}, ${entryData.thing}`;
+      feedback.textContent = `✅ You entered: ${combined}`;
       feedback.style.color = 'green';
 
-      saveHistoryEntry(entry);
-      updateStreakUI('streakDisplay');
-      renderHistoryList('historyList');
+      saveHistoryEntry(combined, 'solo-history');
+      renderHistoryList('historyList', 'solo-history');
+      updateStreakUI('streakDisplay', 'solo');
     } else {
       feedback.textContent = '⚠️ Please fill in all fields.';
-      feedback.style.color = 'red';
+      feedback.style.color = 'orange';
     }
   });
 
-  document.getElementById('historyList')?.classList.add('loaded');
-  renderHistoryList('historyList');
-  updateStreakUI('streakDisplay');
+  renderHistoryList('historyList', 'solo-history');
+  updateStreakUI('streakDisplay', 'solo');
 
   document.querySelector('.back-btn')?.addEventListener('click', showMenu);
   document.querySelector('main')?.classList.remove('active');
