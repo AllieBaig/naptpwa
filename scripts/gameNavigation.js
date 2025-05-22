@@ -8,7 +8,7 @@ import { versionMap } from './utils/version.js';
 const modeMap = {
   regular: './modes/regular.js',
   wordRelic: './modes/wordRelic.js',
-  wordSafari: './modes/wordSafari.js',
+  wordSafari: './modes/safari.js',
   dice: './modes/dice.js',
   atlas: './modes/atlas.js',
   versus: './modes/versus.js'
