@@ -37,7 +37,6 @@ function showError(message) {
 export function showMenu() {
   const menu = document.querySelector('main');
   const game = document.getElementById('game');
-
   menu?.classList.add('active');
   game?.classList.remove('active');
   if (game) game.innerHTML = '';
@@ -47,6 +46,9 @@ export function showMenu() {
 
   const settings = document.getElementById('settings-panel');
   if (settings) settings.style.display = '';
+
+  const errorLink = document.getElementById('error-viewer-link');
+  if (errorLink) errorLink.style.display = 'block';
 }
 
 export async function navigateToMode(mode) {
@@ -60,10 +62,13 @@ export async function navigateToMode(mode) {
     const module = await import(path);
     module.init({ showMenu });
 
-    saveLastMode(mode); // Save for resume feature
+    saveLastMode(mode);
 
     const settings = document.getElementById('settings-panel');
     if (settings) settings.style.display = 'none';
+
+    const errorLink = document.getElementById('error-viewer-link');
+    if (errorLink) errorLink.style.display = 'none';
   } catch (err) {
     console.error(`Failed to load mode "${mode}"`, err);
     showError(`Failed to load "${mode}" mode. Please try again or reload.`);
@@ -76,6 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
   gameContainer.id = 'game';
   gameContainer.classList.add('game-container');
   document.body.appendChild(gameContainer);
+
+  const errorLink = document.createElement('div');
+  errorLink.id = 'error-viewer-link';
+  errorLink.style = 'text-align:center; margin-top:1rem;';
+  errorLink.innerHTML = `<a href="./scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>`;
+  document.body.appendChild(errorLink);
 
   buttons.forEach(button => {
     button.addEventListener('click', () => {
