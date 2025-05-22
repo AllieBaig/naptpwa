@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="="en">
+<html lang="en">
 <head>
   <!-- MIT License – AllieBaig – https://github.com/AllieBaig/naptpwa/blob/main/LICENSE -->
 
@@ -9,7 +9,7 @@
   <meta name="description" content="NAPT Word Game - Modular PWA" />
   <title>NAPT Word Game</title>
 
-  <!-- Preload user preferences before render -->
+  <!-- Preload appearance settings -->
   <script>
     (() => {
       const root = document.documentElement;
@@ -36,7 +36,7 @@
   </header>
 
   <main id="menu" class="active">
-    <div class="mode-buttons">
+    <div id="mode-buttons" class="mode-buttons">
       <button class="menu-btn" data-mode="regular">🧠 Solo Mode</button>
       <button class="menu-btn" data-mode="wordRelic">🏺 Word Relic</button>
       <button class="menu-btn" data-mode="wordSafari">🦁 Word Safari</button>
@@ -45,7 +45,6 @@
       <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
     </div>
 
-    <!-- Settings Panel -->
     <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
       <summary><strong>⚙️ Settings</strong></summary>
       <div style="margin-top: 1rem;">
@@ -81,7 +80,7 @@
 
   <div id="game" class="game-container"></div>
 
-  <!-- Core Scripts -->
+  <!-- Scripts -->
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
   <script type="module">
@@ -89,7 +88,7 @@
     import { injectResetPWA } from './scripts/utils/debugTools.js';
     import { getLastMode } from './scripts/utils/autosave.js';
     import { navigateToMode } from './scripts/gameNavigation.js';
-    import './scripts/utils/errorHandler.js'; // global capture
+    import './scripts/utils/errorHandler.js';
 
     applyUserSettings();
     injectResetPWA();
