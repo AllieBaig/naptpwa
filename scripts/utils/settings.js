@@ -1,5 +1,3 @@
-
-
 // MIT License
 // Copyright (c) 2025 AllieBaig
 // https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
@@ -7,15 +5,13 @@
 export function applyUserSettings() {
   const body = document.body;
 
-  // Font setup
+  // Font
   const font = localStorage.getItem('napt-font');
-  if (font) {
-    body.classList.add(`font-${font}`);
-    const fontSelector = document.getElementById('fontSelector');
-    if (fontSelector) fontSelector.value = font;
-  }
+  if (font) body.classList.add(`font-${font}`);
+  const fontSelector = document.getElementById('fontSelector');
+  if (fontSelector) fontSelector.value = font;
 
-  // Theme setup
+  // Theme
   const theme = localStorage.getItem('napt-theme') || 'system';
   applyTheme(theme);
   const themeSelector = document.getElementById('themeSelector');
@@ -27,22 +23,27 @@ export function applyUserSettings() {
   const contrastToggle = document.getElementById('highContrastToggle');
   if (contrastToggle) contrastToggle.checked = contrast;
 
-  // Voice instructions
+  // Voice
   const voice = localStorage.getItem('napt-voice') === 'true';
   const voiceToggle = document.getElementById('voiceHelpToggle');
   if (voiceToggle) voiceToggle.checked = voice;
+
+  // Resume
+  const resume = localStorage.getItem('napt-resume') === 'true';
+  const resumeToggle = document.getElementById('resumeToggle');
+  if (resumeToggle) resumeToggle.checked = resume;
 
   // Difficulty
   const difficulty = localStorage.getItem('napt-difficulty') || 'medium';
   const difficultySelector = document.getElementById('difficultySelector');
   if (difficultySelector) difficultySelector.value = difficulty;
 
-  // Event listeners
+  // Bind all changes
   setupListeners();
 }
 
 function setupListeners() {
-  // Font selector
+  // Font
   const fontSelector = document.getElementById('fontSelector');
   fontSelector?.addEventListener('change', () => {
     document.body.classList.remove('font-domine', 'font-merriweather', 'font-lora', 'font-tinos');
@@ -55,28 +56,34 @@ function setupListeners() {
     }
   });
 
-  // Theme selector
+  // Theme
   const themeSelector = document.getElementById('themeSelector');
   themeSelector?.addEventListener('change', () => {
-    const val = themeSelector.value;
-    applyTheme(val);
-    localStorage.setItem('napt-theme', val);
+    const theme = themeSelector.value;
+    applyTheme(theme);
+    localStorage.setItem('napt-theme', theme);
   });
 
-  // High Contrast Toggle
+  // Contrast
   const contrastToggle = document.getElementById('highContrastToggle');
   contrastToggle?.addEventListener('change', () => {
     document.body.classList.toggle('theme-high-contrast', contrastToggle.checked);
     localStorage.setItem('napt-contrast', contrastToggle.checked);
   });
 
-  // Voice Help Toggle
+  // Voice
   const voiceToggle = document.getElementById('voiceHelpToggle');
   voiceToggle?.addEventListener('change', () => {
     localStorage.setItem('napt-voice', voiceToggle.checked);
   });
 
-  // Difficulty selector
+  // Resume
+  const resumeToggle = document.getElementById('resumeToggle');
+  resumeToggle?.addEventListener('change', () => {
+    localStorage.setItem('napt-resume', resumeToggle.checked);
+  });
+
+  // Difficulty
   const difficultySelector = document.getElementById('difficultySelector');
   difficultySelector?.addEventListener('change', () => {
     localStorage.setItem('napt-difficulty', difficultySelector.value);
