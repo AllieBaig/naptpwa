@@ -1,31 +1,24 @@
 // MIT License
 // Copyright (c) 2025 AllieBaig
-// Licensed under the MIT License.
-// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
+// https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
-/**
- * Maps game mode names to their respective module paths.
- * Paths are relative to the location of gameNavigation.js (which is in scripts/).
- */
+import { saveLastMode } from './utils/autosave.js';
+
 const modeMap = {
   regular: './modes/regular.js',
   wordRelic: './modes/wordRelic.js',
   wordSafari: './modes/safari.js',
   dice: './modes/dice.js',
   atlas: './modes/atlas.js',
+  versus: './modes/versus.js'
 };
 
-/**
- * Displays a temporary error message at the top of the body.
- * @param {string} message - The error message to display.
- */
 function showError(message) {
-  let errorBox = document.getElementById('mode-error-box');
-  if (!errorBox) {
-    errorBox = document.createElement('div');
-    errorBox.id = 'mode-error-box';
-    // Inline styles for quick visual feedback; consider moving to CSS for larger projects.
-    errorBox.style.cssText = `
+  let box = document.getElementById('mode-error-box');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'mode-error-box';
+    box.style = `
       background: #ffe0e0;
       color: #900;
       padding: 1rem;
@@ -36,62 +29,59 @@ function showError(message) {
       max-width: 600px;
       font-weight: bold;
     `;
-    document.body.insertBefore(errorBox, document.body.firstChild);
+    document.body.insertBefore(box, document.body.firstChild);
   }
-  errorBox.textContent = message;
+  box.textContent = message;
 }
 
-/**
- * Shows the main menu and hides the game area.
- * Also clears any active error messages.
- */
 export function showMenu() {
   const menu = document.querySelector('main');
   const game = document.getElementById('game');
 
-  menu?.classList.add('active'); // Ensure main menu is visible
-  game?.classList.remove('active'); // Hide game area
-  if (game) game.innerHTML = ''; // Clear game content
+  menu?.classList.add('active');
+  game?.classList.remove('active');
+  if (game) game.innerHTML = '';
 
   const errorBox = document.getElementById('mode-error-box');
-  if (errorBox) errorBox.remove(); // Remove any active error messages
+  if (errorBox) errorBox.remove();
+
+  const settings = document.getElementById('settings-panel');
+  if (settings) settings.style.display = '';
 }
 
-/**
- * Navigates to a specific game mode by dynamically importing its module.
- * @param {string} mode - The name of the game mode to navigate to.
- */
 export async function navigateToMode(mode) {
-  const modulePath = modeMap[mode];
-
-  if (!modulePath) {
-    showError(`Unknown game mode: "${mode}". Please select a valid option.`);
-    console.error(`Unknown game mode: ${mode}`);
+  const path = modeMap[mode];
+  if (!path) {
+    showError(`Unknown mode: "${mode}"`);
     return;
   }
 
   try {
-    const module = await import(modulePath);
-    // Call the init function of the imported module.
-    // This assumes all game mode modules export 'init' as a named export.
+    const module = await import(path);
     module.init({ showMenu });
+
+    saveLastMode(mode); // Save for resume feature
+
+    const settings = document.getElementById('settings-panel');
+    if (settings) settings.style.display = 'none';
   } catch (err) {
+    console.error(`Failed to load mode "${mode}"`, err);
     showError(`Failed to load "${mode}" mode. Please try again or reload.`);
-    console.error(`Error loading mode "${mode}"`, err);
   }
 }
 
-/**
- * Attaches event listeners to all game mode buttons on DOMContentLoaded.
- */
 document.addEventListener('DOMContentLoaded', () => {
-  const menuButtons = document.querySelectorAll('.menu-btn');
-  menuButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-      const mode = event.target.dataset.mode;
+  const buttons = document.querySelectorAll('.menu-btn');
+  const gameContainer = document.createElement('div');
+  gameContainer.id = 'game';
+  gameContainer.classList.add('game-container');
+  document.body.appendChild(gameContainer);
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      const mode = button.getAttribute('data-mode');
       navigateToMode(mode);
     });
   });
 });
-
 
