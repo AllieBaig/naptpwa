@@ -58,13 +58,13 @@
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
   
-  import { applyUserSettings } from './scripts/utils/settings.js';
-applyUserSettings();
-
   <script type="module">
-    import { injectResetPWA } from './scripts/utils/debugTools.js';
-    injectResetPWA();
-  </script>
+  import { applyUserSettings } from './scripts/utils/settings.js';
+  import { injectResetPWA } from './scripts/utils/debugTools.js';
+
+  applyUserSettings();
+  injectResetPWA();
+</script>
 
   <!-- Font selector script -->
   <script>
