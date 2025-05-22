@@ -9,9 +9,9 @@ export function init({ showMenu }) {
 
   game.innerHTML = `
     <h2>🧠 Solo Mode</h2>
-    <p>Enter a Name, Place, Animal, and Thing — no timer, just you vs. the alphabet.</p>
+    <p>Enter a Name, Place, Animal, and Thing — at your own pace.</p>
 
-    <form id="solo-form" class="regular-form" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+    <form id="solo-form" class="regular-form">
       <label>Name: <input type="text" name="name" required /></label>
       <label>Place: <input type="text" name="place" required /></label>
       <label>Animal: <input type="text" name="animal" required /></label>
@@ -19,8 +19,8 @@ export function init({ showMenu }) {
       <button type="submit">Submit</button>
     </form>
 
-    <div id="solo-feedback" class="feedback" style="margin-top: 0.5rem;"></div>
-    <button class="back-btn" style="margin-top: 1.5rem;">◀️ Back to Menu</button>
+    <div id="solo-feedback" class="feedback"></div>
+    <button class="back-btn">◀️ Back to Menu</button>
   `;
 
   const form = document.getElementById('solo-form');
@@ -29,8 +29,10 @@ export function init({ showMenu }) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(form));
-    if (Object.values(data).every(v => v.trim())) {
-      feedback.textContent = `✅ Nice! You entered: ${data.name}, ${data.place}, ${data.animal}, ${data.thing}`;
+    const allFilled = Object.values(data).every(val => val.trim());
+
+    if (allFilled) {
+      feedback.textContent = `✅ Great! You entered: ${data.name}, ${data.place}, ${data.animal}, ${data.thing}`;
       feedback.style.color = 'green';
     } else {
       feedback.textContent = '⚠️ Please fill in all fields.';
