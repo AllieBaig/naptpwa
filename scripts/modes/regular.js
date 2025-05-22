@@ -1,13 +1,8 @@
-// MIT License
-// Copyright (c) 2025 AllieBaig
-// Licensed under the MIT License.
-// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
-
 export function init({ showMenu }) {
-  const gameArea = document.getElementById('game');
-  if (!gameArea) return;
+  const game = document.getElementById('game');
+  if (!game) return;
 
-  gameArea.innerHTML = `
+  game.innerHTML = `
     <h2>📝 Regular Mode</h2>
     <form id="regular-form" class="regular-form">
       <label>Name: <input type="text" name="name" required /></label>
@@ -16,25 +11,18 @@ export function init({ showMenu }) {
       <label>Thing: <input type="text" name="thing" required /></label>
       <button type="submit">Submit</button>
     </form>
-
     <button class="back-btn">◀️ Back to Menu</button>
     <div id="regular-feedback" class="feedback"></div>
   `;
 
-  const form = document.getElementById('regular-form');
-  const feedback = document.getElementById('regular-feedback');
-  const backBtn = document.querySelector('.back-btn');
+  const form = game.querySelector('#regular-form');
+  const feedback = game.querySelector('#regular-feedback');
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
-    const formData = new FormData(form);
-    const name = formData.get('name').trim();
-    const place = formData.get('place').trim();
-    const animal = formData.get('animal').trim();
-    const thing = formData.get('thing').trim();
-
-    if (name && place && animal && thing) {
-      feedback.textContent = `✅ Saved: ${name}, ${place}, ${animal}, ${thing}`;
+    const data = Object.fromEntries(new FormData(form));
+    if (Object.values(data).every(v => v.trim())) {
+      feedback.textContent = `✅ Saved: ${data.name}, ${data.place}, ${data.animal}, ${data.thing}`;
       feedback.style.color = 'green';
     } else {
       feedback.textContent = '⚠️ Please fill in all fields.';
@@ -42,9 +30,8 @@ export function init({ showMenu }) {
     }
   });
 
-  backBtn.addEventListener('click', showMenu);
-
+  game.querySelector('.back-btn').addEventListener('click', showMenu);
   document.querySelector('main')?.classList.remove('active');
-  gameArea.classList.add('active');
+  game.classList.add('active');
 }
 
