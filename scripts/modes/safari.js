@@ -9,15 +9,15 @@ export function init({ showMenu }) {
 
   game.innerHTML = `
     <h2>🦁 Word Safari</h2>
-    <div id="prompt" style="margin-bottom: 1rem;"></div>
+    <div id="prompt-box" class="feedback" style="margin-bottom: 1rem;"></div>
 
-    <form id="safari-form" style="display: flex; flex-direction: column; gap: 1rem;">
+    <form id="safari-form" class="safari-form" style="display: flex; flex-direction: column; gap: 1rem;">
       <input type="text" id="safari-input" placeholder="Your word..." required />
       <button type="submit">Submit</button>
     </form>
 
-    <div id="safari-feedback" class="feedback"></div>
-    <button class="back-btn">◀️ Back to Menu</button>
+    <div id="safari-feedback" class="feedback" style="margin-top: 0.5rem;"></div>
+    <button class="back-btn" style="margin-top: 1.5rem;">◀️ Back to Menu</button>
   `;
 
   const prompts = [
@@ -29,8 +29,9 @@ export function init({ showMenu }) {
   ];
   let index = 0;
 
-  const promptBox = game.querySelector('#prompt');
-  const feedback = game.querySelector('#safari-feedback');
+  const promptBox = document.getElementById('prompt-box');
+  const feedback = document.getElementById('safari-feedback');
+  const form = document.getElementById('safari-form');
 
   function showPrompt() {
     promptBox.textContent = `Prompt: ${prompts[index]}`;
@@ -39,23 +40,24 @@ export function init({ showMenu }) {
 
   showPrompt();
 
-  game.querySelector('#safari-form').addEventListener('submit', e => {
+  form.addEventListener('submit', e => {
     e.preventDefault();
-    const input = game.querySelector('#safari-input').value.trim();
+    const input = document.getElementById('safari-input').value.trim();
     if (input) {
       feedback.textContent = `✅ You entered: "${input}"`;
       feedback.style.color = 'green';
       index++;
       if (index < prompts.length) {
         showPrompt();
+        document.getElementById('safari-input').value = '';
       } else {
         promptBox.textContent = '🌿 Safari complete!';
+        form.style.display = 'none';
       }
     }
   });
 
-  game.querySelector('.back-btn').addEventListener('click', showMenu);
-
+  document.querySelector('.back-btn')?.addEventListener('click', showMenu);
   document.querySelector('main')?.classList.remove('active');
   game.classList.add('active');
 }
