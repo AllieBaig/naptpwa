@@ -3,6 +3,7 @@
 // https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
 import { saveLastMode } from './utils/autosave.js';
+import { versionMap } from './utils/version.js';
 
 const modeMap = {
   regular: './modes/regular.js',
@@ -49,6 +50,8 @@ export function showMenu() {
 
   const errorBox = document.getElementById('mode-error-box');
   if (errorBox) errorBox.remove();
+
+  window.__LAST_LOADED_VERSION = `mainMenu (menu view)`;
 }
 
 export async function navigateToMode(mode) {
@@ -68,11 +71,13 @@ export async function navigateToMode(mode) {
     const settings = document.getElementById('settings-panel');
     const errorLink = document.getElementById('error-viewer-link');
 
-    if (menu) menu.classList.remove('active');
-    if (game) game.classList.add('active');
-    if (settings) settings.style.display = 'none';
-    if (errorLink) errorLink.style.display = 'none';
+    menu?.classList.remove('active');
+    game?.classList.add('active');
+    settings?.style.setProperty('display', 'none');
+    errorLink?.style.setProperty('display', 'none');
 
+    // Update version info for logging
+    window.__LAST_LOADED_VERSION = `${mode}.js ${versionMap[mode] || 'v?'} (loaded)`;
   } catch (err) {
     console.error(`Failed to load mode "${mode}"`, err);
     showError(`Failed to load "${mode}" mode. Please try again or reload.`);
@@ -81,10 +86,13 @@ export async function navigateToMode(mode) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const buttons = document.querySelectorAll('.menu-btn');
-  const gameContainer = document.createElement('div');
-  gameContainer.id = 'game';
-  gameContainer.classList.add('game-container');
-  document.body.appendChild(gameContainer);
+
+  const gameContainer = document.getElementById('game') || document.createElement('div');
+  if (!gameContainer.id) {
+    gameContainer.id = 'game';
+    gameContainer.classList.add('game-container');
+    document.body.appendChild(gameContainer);
+  }
 
   const errorLink = document.createElement('div');
   errorLink.id = 'error-viewer-link';
@@ -98,5 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
       navigateToMode(mode);
     });
   });
+
+  // Mark version for initial state
+  window.__LAST_LOADED_VERSION = `gameNavigation.js ${versionMap.gameNavigation}`;
 });
 
