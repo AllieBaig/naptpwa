@@ -9,7 +9,6 @@
   <meta name="description" content="NAPT Word Game - Modular PWA" />
   <title>NAPT Word Game</title>
 
-  <!-- Preload appearance settings -->
   <script>
     (() => {
       const root = document.documentElement;
@@ -22,7 +21,6 @@
     })();
   </script>
 
-  <!-- Fonts + Styles -->
   <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet" />
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles/main.css" />
@@ -43,6 +41,7 @@
       <button class="menu-btn" data-mode="dice">🎲 Dice Challenge</button>
       <button class="menu-btn" data-mode="atlas">🗺️ Word Atlas</button>
       <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
+      <button class="menu-btn" data-mode="trail">🪄 Trail of Letters</button>
     </div>
 
     <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
@@ -80,7 +79,7 @@
 
   <div id="game" class="game-container"></div>
 
-  <!-- Scripts -->
+  <!-- Core Scripts -->
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
   <script type="module">
