@@ -12,7 +12,8 @@ const modeMap = {
   wordSafari: './modes/wordSafari.js',
   dice: './modes/dice.js',
   atlas: './modes/atlas.js',
-  versus: './modes/versus.js'
+  versus: './modes/versus.js',
+  trail: './modes/trail.js'
 };
 
 function showError(message) {
@@ -64,7 +65,7 @@ export async function navigateToMode(mode) {
 
   try {
     const module = await import(path);
-    resetGameContainer(); // clear game + hide menu
+    resetGameContainer();
     module.init({ showMenu });
 
     saveLastMode(mode);
