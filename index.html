@@ -9,7 +9,21 @@
   <meta name="description" content="NAPT Word Game - Modular PWA" />
   <title>NAPT Word Game</title>
 
-  <!-- Font options -->
+  <!-- Preload user settings before paint -->
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const font = localStorage.getItem('napt-font');
+      const theme = localStorage.getItem('napt-theme');
+      const contrast = localStorage.getItem('napt-contrast');
+
+      if (font) root.classList.add(`font-${font}`);
+      if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
+      if (contrast === 'true') root.classList.add('theme-high-contrast');
+    })();
+  </script>
+
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
 
   <!-- Styles -->
@@ -17,6 +31,7 @@
   <link rel="stylesheet" href="styles/main.css" />
   <link rel="icon" href="icons/icon-192.png" type="image/png" />
 </head>
+
 <body>
   <header>
     <h1>NAPT Word Game</h1>
@@ -24,69 +39,63 @@
   </header>
 
   <div id="app-grid">
-    <!-- Game Mode Menu -->
+    <!-- Mode Buttons -->
     <main id="menu" class="active">
       <div class="mode-buttons">
-        <button class="menu-btn" data-mode="regular">Regular Game</button>
-        <button class="menu-btn" data-mode="wordRelic">Word Relic</button>
-        <button class="menu-btn" data-mode="wordSafari">Word Safari</button>
-        <button class="menu-btn" data-mode="dice">Dice Challenge</button>
-        <button class="menu-btn" data-mode="atlas">Word Atlas</button>
+        <button class="menu-btn" data-mode="regular">🧠 Solo Mode</button>
+        <button class="menu-btn" data-mode="wordRelic">🏺 Word Relic</button>
+        <button class="menu-btn" data-mode="wordSafari">🦁 Word Safari</button>
+        <button class="menu-btn" data-mode="dice">🎲 Dice Challenge</button>
+        <button class="menu-btn" data-mode="atlas">🗺️ Word Atlas</button>
+        <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
       </div>
 
-      <!-- Settings Panel -->
+      <!-- Settings -->
       <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
         <summary style="cursor: pointer; font-weight: bold;">⚙️ Settings</summary>
         <div style="margin-top: 1rem;">
-          <label for="fontSelector"><strong>Choose Font:</strong></label><br/>
-          <select id="fontSelector" style="margin-top: 0.5rem; padding: 0.5rem;">
+          <label for="fontSelector"><strong>Font:</strong></label><br/>
+          <select id="fontSelector" style="margin: 0.5rem 0; padding: 0.5rem;">
             <option value="">System Default</option>
             <option value="domine">Domine</option>
             <option value="merriweather">Merriweather</option>
             <option value="lora">Lora</option>
             <option value="tinos">Tinos</option>
           </select>
+
+          <label for="themeSelector"><strong>Theme:</strong></label><br/>
+          <select id="themeSelector" style="margin: 0.5rem 0; padding: 0.5rem;">
+            <option value="system">System Default</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+
+          <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
+          <label><input type="checkbox" id="voiceHelpToggle" /> Voice Instructions</label><br/>
+
+          <label for="difficultySelector"><strong>Difficulty:</strong></label><br/>
+          <select id="difficultySelector" style="margin: 0.5rem 0; padding: 0.5rem;">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
         </div>
       </details>
     </main>
 
-    <!-- Game Mode Output -->
+    <!-- Game Mode Content -->
     <div id="game" class="game-container"></div>
   </div>
 
-  <!-- Modules -->
+  <!-- Scripts -->
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
-  
   <script type="module">
-  import { applyUserSettings } from './scripts/utils/settings.js';
-  import { injectResetPWA } from './scripts/utils/debugTools.js';
+    import { applyUserSettings } from './scripts/utils/settings.js';
+    import { injectResetPWA } from './scripts/utils/debugTools.js';
 
-  applyUserSettings();
-  injectResetPWA();
-</script>
-
-  <!-- Font selector script -->
-  <script>
-    const fontSelector = document.getElementById('fontSelector');
-    const storedFont = localStorage.getItem('napt-font');
-    const fontClasses = ['font-domine', 'font-merriweather', 'font-lora', 'font-tinos'];
-
-    if (storedFont) {
-      document.body.classList.add(`font-${storedFont}`);
-      fontSelector.value = storedFont;
-    }
-
-    fontSelector.addEventListener('change', () => {
-      document.body.classList.remove(...fontClasses);
-      const selected = fontSelector.value;
-      if (selected) {
-        document.body.classList.add(`font-${selected}`);
-        localStorage.setItem('napt-font', selected);
-      } else {
-        localStorage.removeItem('napt-font');
-      }
-    });
+    applyUserSettings();
+    injectResetPWA();
   </script>
 </body>
 </html>
