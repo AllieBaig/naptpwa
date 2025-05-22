@@ -41,17 +41,17 @@ export function showMenu() {
   const game = document.getElementById('game');
   const settings = document.getElementById('settings-panel');
   const errorLink = document.getElementById('error-viewer-link');
+  const modeButtons = document.getElementById('mode-buttons');
 
   menu?.classList.add('active');
   game?.classList.remove('active');
   game.innerHTML = '';
 
-  if (settings) settings.style.display = '';
-  if (errorLink) errorLink.style.display = 'block';
+  settings?.style.setProperty('display', '');
+  errorLink?.style.setProperty('display', 'block');
+  modeButtons?.classList.remove('hidden');
 
-  const errorBox = document.getElementById('mode-error-box');
-  if (errorBox) errorBox.remove();
-
+  document.getElementById('mode-error-box')?.remove();
   window.__LAST_LOADED_VERSION = 'mainMenu';
 }
 
@@ -64,15 +64,14 @@ export async function navigateToMode(mode) {
 
   try {
     const module = await import(path);
-    resetGameContainer(); // clean slate before mode loads
+    resetGameContainer(); // clear game + hide menu
     module.init({ showMenu });
 
     saveLastMode(mode);
 
-    const settings = document.getElementById('settings-panel');
-    const errorLink = document.getElementById('error-viewer-link');
-    settings?.style.setProperty('display', 'none');
-    errorLink?.style.setProperty('display', 'none');
+    document.getElementById('settings-panel')?.style.setProperty('display', 'none');
+    document.getElementById('error-viewer-link')?.style.setProperty('display', 'none');
+    document.getElementById('mode-buttons')?.classList.add('hidden');
 
     window.__LAST_LOADED_VERSION = `${mode}.js ${versionMap[mode] || 'v?'}`;
   } catch (err) {
@@ -106,3 +105,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.__LAST_LOADED_VERSION = `gameNavigation.js ${versionMap.gameNavigation}`;
 });
+
