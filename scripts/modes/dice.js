@@ -3,109 +3,79 @@
 // Licensed under the MIT License.
 // See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
 
-const STORAGE_KEY = 'dice_challenge_history';
-
 export function init({ showMenu }) {
-  const container = document.getElementById('game');
-  container.innerHTML = '';
+  const game = document.getElementById('game');
+  if (!game) return;
 
-  const backButton = document.createElement('button');
-  backButton.textContent = '◀️ Back to Menu';
-  backButton.addEventListener('click', showMenu);
-  container.appendChild(backButton);
+  const letter = rollLetter();
+  let timerInterval = null;
+  let secondsLeft = 60;
 
-  const title = document.createElement('h2');
-  title.textContent = '🎲 Dice Challenge';
-  container.appendChild(title);
+  game.innerHTML = `
+    <h2>🎲 Dice Challenge</h2>
+    <p id="rolled-letter" style="font-size: 2rem;">You rolled: <strong>${letter}</strong></p>
+    <p id="timer" class="feedback">⏳ Time Left: <strong>60s</strong></p>
 
-  const result = document.createElement('p');
-  result.style.fontSize = '2rem';
-  result.style.margin = '1rem 0';
-  result.textContent = 'Roll the dice!';
-  container.appendChild(result);
+    <form id="dice-form" class="dice-form" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
+      <label>Name: <input type="text" name="name" required /></label>
+      <label>Place: <input type="text" name="place" required /></label>
+      <label>Animal: <input type="text" name="animal" required /></label>
+      <label>Thing: <input type="text" name="thing" required /></label>
+      <button type="submit">Submit</button>
+    </form>
 
-  const rollButton = document.createElement('button');
-  rollButton.textContent = 'Roll Dice';
-  rollButton.style.fontSize = '1.5rem';
-  rollButton.addEventListener('click', () => {
-    const roll = Math.floor(Math.random() * 6) + 1;
-    result.textContent = `You rolled: ${getDiceEmoji(roll)} (${roll})`;
-    recordToday();
-    updateStatsUI(statsContainer);
+    <div id="dice-feedback" class="feedback" style="margin-top: 0.5rem;"></div>
+    <button class="back-btn" style="margin-top: 1.5rem;">◀️ Back to Menu</button>
+  `;
+
+  const form = document.getElementById('dice-form');
+  const feedback = document.getElementById('dice-feedback');
+  const timerDisplay = document.getElementById('timer');
+
+  startTimer();
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    stopTimer();
+
+    const data = Object.fromEntries(new FormData(form));
+    const missed = Object.entries(data).filter(([k, v]) => !v.trim().toLowerCase().startsWith(letter.toLowerCase()));
+
+    if (missed.length > 0) {
+      feedback.textContent = `❌ Incorrect. These didn’t start with "${letter}": ${missed.map(([k]) => k).join(', ')}`;
+      feedback.style.color = 'red';
+    } else {
+      feedback.textContent = `✅ All correct! Great job!`;
+      feedback.style.color = 'green';
+    }
   });
 
-  container.appendChild(rollButton);
-
-  const statsContainer = document.createElement('div');
-  statsContainer.style.marginTop = '1rem';
-  container.appendChild(statsContainer);
-  updateStatsUI(statsContainer);
-
-  container.classList.add('active');
-}
-
-function getDiceEmoji(number) {
-  const diceEmojis = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-  return diceEmojis[number - 1] || '?';
-}
-
-function getTodayDate() {
-  const today = new Date();
-  return today.toISOString().split('T')[0];
-}
-
-function loadHistory() {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveHistory(history) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-  } catch {
-    // storage full or disabled
-  }
-}
-
-function recordToday() {
-  const history = loadHistory();
-  const today = getTodayDate();
-  if (!history.includes(today)) {
-    history.push(today);
-    saveHistory(history);
-  }
-}
-
-function calculateStreak(history) {
-  const today = new Date();
-  let streak = 0;
-
-  for (let i = 0; i < 7; i++) {
-    const checkDate = new Date(today);
-    checkDate.setDate(today.getDate() - i);
-    const key = checkDate.toISOString().split('T')[0];
-    if (history.includes(key)) {
-      streak++;
-    } else {
-      break;
-    }
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      secondsLeft--;
+      timerDisplay.innerHTML = `⏳ Time Left: <strong>${secondsLeft}s</strong>`;
+      if (secondsLeft <= 0) {
+        stopTimer();
+        form.querySelector('button[type="submit"]').click(); // auto-submit
+      }
+    }, 1000);
   }
 
-  return streak;
+  function stopTimer() {
+    clearInterval(timerInterval);
+  }
+
+  document.querySelector('.back-btn')?.addEventListener('click', () => {
+    stopTimer();
+    showMenu();
+  });
+
+  document.querySelector('main')?.classList.remove('active');
+  game.classList.add('active');
 }
 
-function updateStatsUI(container) {
-  const history = loadHistory();
-  const streak = calculateStreak(history);
-  const last7 = history.slice(-7).join(', ') || 'None';
-
-  container.innerHTML = `
-    <p><strong>🔥 Weekly Streak:</strong> ${streak} day(s)</p>
-    <p><strong>📅 Recent Plays:</strong> ${last7}</p>
-  `;
+function rollLetter() {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  return alphabet[Math.floor(Math.random() * alphabet.length)];
 }
 
