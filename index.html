@@ -10,31 +10,41 @@
     <script>
         // --- Fallback Mechanism for Original Site ---
         // This is the URL where your Site2 PWA is *actually hosted*.
-        // If Site2 is hosted at https://your-domain.com/Site2/, use that.
-        // If Site2 is meant to be a completely separate domain, use that (e.g., https://naptpwabackup.com/).
-        const fallbackSiteUrl = "https://your-domain.com/Site2/"; // **IMPORTANT: Update this with the real URL of Site2**
-        const criticalResourceLoadDelayMs = 4000; // Time to wait for critical resources to load (4 seconds)
+        // If Site2 is located within your naptpwa repo, it might be:
+        // "https://alliebaig.github.io/naptpwa/Site2/"
+        // If it's a completely separate domain, use that (e.g., "https://naptpwabackup.com/").
+        // !!! IMPORTANT: YOU MUST UPDATE THIS URL !!!
+        const fallbackSiteUrl = "https://alliebaig.github.io/naptpwa/Site2/"; 
+        const criticalResourceLoadDelayMs = 4000; // Time in milliseconds to wait for critical resources (4 seconds)
 
         let initialLoadCompleted = false;
         let errorsDetected = 0;
         const errorThreshold = 2; // Number of errors before triggering redirect
 
+        // Global error handler for uncaught JavaScript errors
         window.onerror = function(message, source, lineno, colno, error) {
             errorsDetected++;
             console.error("Critical JS Error on original site:", message, source, lineno);
+            // Trigger fallback if enough errors accumulate
             if (errorsDetected >= errorThreshold) {
                 console.warn("Too many JS errors. Redirecting to fallback site:", fallbackSiteUrl);
-                window.location.replace(fallbackSiteUrl);
+                window.location.replace(fallbackSiteUrl); // Use replace() to prevent back button issues
             }
             return true; // Prevent default browser error reporting
         };
 
+        // Fallback check if DOMContentLoaded doesn't fire or main critical scripts fail to load
         document.addEventListener('DOMContentLoaded', () => {
-            initialLoadCompleted = true;
+            initialLoadCompleted = true; // DOM is ready, base HTML loaded
             console.log("Original site DOMContentLoaded.");
+            // You could add more specific checks here for essential elements or global variables
+            // that should be present after main scripts load successfully.
         });
 
+        // Timeout to catch issues that don't trigger onerror or DOMContentLoaded
         setTimeout(() => {
+            // If DOMContentLoaded never fired (page hung/critical HTML error)
+            // OR if the page loaded but errors accumulated (like 404s for critical JS/CSS preventing functionality)
             if (!initialLoadCompleted || errorsDetected > 0) {
                 console.warn("Original site did not load fully or encountered errors. Initiating fallback.");
                 window.location.replace(fallbackSiteUrl);
@@ -56,18 +66,19 @@
     if (useEmojis === 'false') root.classList.add('no-emojis');
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
 
-    <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles/main.css" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
-    <script src="scripts/serviceWorkerRegistration.js"></script>
-  </head>
+    <link rel="manifest" href="/naptpwa/manifest.json" />
+  <link rel="stylesheet" href="/naptpwa/styles/main.css" />
+  <link rel="icon" href="/naptpwa/icons/icon-192.png" type="image/png" />
+  
+    <script src="/naptpwa/scripts/serviceWorkerRegistration.js"></script>
+</head>
 
 <body>
   <header>
     <h1>NAPT Word Game – Site2 Test</h1>
-    <p>This version uses <code>/Site2/scripts/</code> as the source.</p>
+    <p>This version uses <code>/naptpwa/Site2/scripts/</code> as the source.</p>
   </header>
 
   <main id="menu" class="active">
@@ -126,15 +137,14 @@
   <div id="game" class="game-container"></div>
 
   <div id="error-viewer-link" style="text-align:center; margin-top:1rem;">
-        <a href="scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>
+        <a href="/naptpwa/scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>
   </div>
 
     <script type="module">
-    // This path is correct IF Site2 is a subfolder at the web root
-    const site2 = './Site2/scripts/';
-    await import(site2 + 'main.js'); // This will load Site2/scripts/main.js
-    await import(site2 + 'gameNavigation.js'); // This will load Site2/scripts/gameNavigation.js
+    const site2 = '/naptpwa/Site2/scripts/'; // Use absolute path from GitHub Pages root
+    await import(site2 + 'main.js'); // This will load /naptpwa/Site2/scripts/main.js
+    await import(site2 + 'gameNavigation.js'); // This will load /naptpwa/Site2/scripts/gameNavigation.js
   </script>
 
-  </body>
+</body>
 </html>
