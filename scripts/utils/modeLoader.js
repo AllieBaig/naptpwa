@@ -19,6 +19,7 @@ const modeMap = {
   nearby: '/naptpwa/scripts/modes/nearby.js',
 };
 
+/*
 export async function navigateToMode(mode) {
   const path = modeMap[mode];
   if (!path) {
@@ -42,4 +43,33 @@ export async function navigateToMode(mode) {
     showError(`Failed to load "${mode}" mode. Please try again or reload.`);
   }
 }
+*/
+
+export async function navigateToMode(mode) {
+  const path = modeMap[mode];
+  if (!path) {
+    showError(`Unknown mode: "${mode}"`);
+    return;
+  }
+
+  console.log('Attempting to import path:', path); // <--- ADD THIS LINE
+
+  try {
+    const module = await import(path); // This is line 29
+    resetGameContainer();
+    module.init({ showMenu });
+    saveLastMode(mode);
+
+    document.getElementById('settings-panel')?.style.setProperty('display', 'none');
+    document.getElementById('error-viewer-link')?.style.setProperty('display', 'none');
+    document.getElementById('mode-buttons')?.style.setProperty('display', 'none');
+
+    window.__LAST_LOADED_VERSION = `${mode}.js ${versionMap[mode] || 'v?'}`;
+  } catch (err) {
+    console.error(`Failed to load mode "${mode}"`, err); // This is line 40
+    showError(`Failed to load "${mode}" mode. Please try again or reload.`);
+  }
+}
+
+
 
