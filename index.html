@@ -9,32 +9,33 @@ https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#0055aa" />
-  <meta name="description" content="NAPT Word Game - Modular Multi-Mode PWA" />
-  <title>NAPT Word Game</title>
+  <meta name="description" content="NAPT Word Game (Site2 Test)" />
+  <title>NAPT Word Game (Site2)</title>
 
-  <!-- Font + Theme preload -->
+  <!-- Theme & Font Classes -->
   <script>
     const root = document.documentElement;
     const font = localStorage.getItem('napt-font');
     const theme = localStorage.getItem('napt-theme');
     const contrast = localStorage.getItem('napt-contrast');
     const useEmojis = localStorage.getItem('napt-use-emojis');
+
     if (font) root.classList.add(`font-${font}`);
     if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
     if (contrast === 'true') root.classList.add('theme-high-contrast');
     if (useEmojis === 'false') root.classList.add('no-emojis');
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles/main.css" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="icon" href="../icons/icon-192.png" type="image/png" />
 </head>
 
 <body>
   <header>
-    <h1>NAPT Word Game</h1>
-    <p>Select a mode to begin</p>
+    <h1>NAPT Word Game – Site2 Test</h1>
+    <p>This version uses <code>/Site2/scripts/</code> as the source.</p>
   </header>
 
   <main id="menu" class="active">
@@ -70,7 +71,6 @@ https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
         <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
         <label><input type="checkbox" id="emojiToggle" /> Show Emojis in Game Labels</label><br/>
-        <label><input type="checkbox" id="voiceHelpToggle" /> Voice Instructions</label><br/>
         <label><input type="checkbox" id="resumeToggle" /> Resume Last Game on Load</label><br/>
 
         <label for="difficultySelector">Difficulty:</label><br/>
@@ -80,7 +80,7 @@ https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
           <option value="hard">Hard</option>
         </select><br/>
 
-        <label for="radiusSelector">Map Radius (Nearby Mode):</label><br/>
+        <label for="radiusSelector">Map Radius:</label><br/>
         <select id="radiusSelector">
           <option value="3">3 km</option>
           <option value="10" selected>10 km</option>
@@ -94,13 +94,17 @@ https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
   <div id="game" class="game-container"></div>
 
   <div id="error-viewer-link" style="text-align:center; margin-top:1rem;">
-    <a href="./scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>
+    <a href="../scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>
   </div>
 
-  <!-- Scripts -->
-  <script type="module" src="scripts/gameNavigation.js"></script>
-  <script src="scripts/serviceWorkerRegistration.js"></script>
-  <script type="module" src="scripts/main.js"></script>
+  <!-- Load all scripts from Site2/scripts -->
+  <script type="module">
+    const site2 = './Site2/scripts/';
+    await import(site2 + 'main.js');
+    await import(site2 + 'gameNavigation.js');
+  </script>
+
+  <script src="../scripts/serviceWorkerRegistration.js"></script>
 </body>
 </html>
 
