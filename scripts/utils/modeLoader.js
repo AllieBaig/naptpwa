@@ -10,12 +10,12 @@ import { versionMap } from './version.js';
 const modeMap = {
   regular: '/modes/regular.js',
   wordRelic: '/modes/wordRelic.js',
-  wordSafari: '../modes/wordSafari.js',
-  dice: '../modes/dice.js',
-  atlas: '../modes/atlas.js',
-  versus: '../modes/versus.js',
-  trail: '../modes/trail.js',
-  nearby: '../modes/nearby.js',
+  wordSafari: '/modes/wordSafari.js',
+  dice: '/modes/dice.js',
+  atlas: '/modes/atlas.js',
+  versus: '/modes/versus.js',
+  trail: '/modes/trail.js',
+  nearby: '/modes/nearby.js',
 };
 
 export async function navigateToMode(mode) {
