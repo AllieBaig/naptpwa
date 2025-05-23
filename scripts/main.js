@@ -7,27 +7,82 @@ import { getLastMode } from './utils/autosave.js';
 import { navigateToMode } from './gameNavigation.js';
 import './utils/errorHandler.js';
 
-const RADIUS_KEY = 'napt-radius-km';
-
 document.addEventListener('DOMContentLoaded', () => {
   applyUserSettings();
   injectResetPWA();
 
   const shouldResume = localStorage.getItem('napt-resume') === 'true';
   const lastMode = getLastMode();
-
   if (shouldResume && lastMode) {
     navigateToMode(lastMode);
   }
 
-  // Radius selector support for Nearby Mode
+  // Font selector
+  const fontSelector = document.getElementById('fontSelector');
+  if (fontSelector) {
+    fontSelector.value = localStorage.getItem('napt-font') || '';
+    fontSelector.addEventListener('change', () => {
+      localStorage.setItem('napt-font', fontSelector.value);
+      location.reload();
+    });
+  }
+
+  // Theme selector
+  const themeSelector = document.getElementById('themeSelector');
+  if (themeSelector) {
+    themeSelector.value = localStorage.getItem('napt-theme') || 'system';
+    themeSelector.addEventListener('change', () => {
+      localStorage.setItem('napt-theme', themeSelector.value);
+      location.reload();
+    });
+  }
+
+  // Emoji toggle
+  const emojiToggle = document.getElementById('emojiToggle');
+  if (emojiToggle) {
+    const current = localStorage.getItem('napt-use-emojis');
+    emojiToggle.checked = current !== 'false';
+    emojiToggle.addEventListener('change', () => {
+      localStorage.setItem('napt-use-emojis', emojiToggle.checked ? 'true' : 'false');
+      location.reload();
+    });
+  }
+
+  // High contrast toggle
+  const contrastToggle = document.getElementById('highContrastToggle');
+  if (contrastToggle) {
+    const stored = localStorage.getItem('napt-contrast') === 'true';
+    contrastToggle.checked = stored;
+    contrastToggle.addEventListener('change', () => {
+      localStorage.setItem('napt-contrast', contrastToggle.checked);
+      location.reload();
+    });
+  }
+
+  // Resume toggle
+  const resumeToggle = document.getElementById('resumeToggle');
+  if (resumeToggle) {
+    resumeToggle.checked = localStorage.getItem('napt-resume') === 'true';
+    resumeToggle.addEventListener('change', () => {
+      localStorage.setItem('napt-resume', resumeToggle.checked);
+    });
+  }
+
+  // Difficulty selector
+  const difficultySelector = document.getElementById('difficultySelector');
+  if (difficultySelector) {
+    difficultySelector.value = localStorage.getItem('napt-difficulty') || 'easy';
+    difficultySelector.addEventListener('change', () => {
+      localStorage.setItem('napt-difficulty', difficultySelector.value);
+    });
+  }
+
+  // Radius selector
   const radiusSelector = document.getElementById('radiusSelector');
   if (radiusSelector) {
-    const saved = localStorage.getItem(RADIUS_KEY);
-    if (saved) radiusSelector.value = saved;
-
+    radiusSelector.value = localStorage.getItem('napt-radius-km') || '10';
     radiusSelector.addEventListener('change', () => {
-      localStorage.setItem(RADIUS_KEY, radiusSelector.value);
+      localStorage.setItem('napt-radius-km', radiusSelector.value);
     });
   }
 });
