@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Error Log</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #111;
+      color: #eee;
+      padding: 1rem;
+    }
+    h2 {
+      text-align: center;
+    }
+    .error-entry {
+      background: #1a1a1a;
+      border: 1px solid #444;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0.5rem;
+    }
+    .error-entry strong {
+      color: #f66;
+    }
+    .error-entry small {
+      color: #aaa;
+    }
+    #clearErrorLogBtn {
+      display: block;
+      margin: 1rem auto;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h2>🐞 Error Log Viewer</h2>
+  <button id="clearErrorLogBtn">Clear Error Log</button>
+  <div id="errorList"></div>
+
+  <script type="module">
+    import { getErrorLog, clearErrorLog } from './errorHandler.js';
+
+    const container = document.getElementById('errorList');
+    const logs = getErrorLog();
+
+    if (logs.length === 0) {
+      container.innerHTML = "<p>No errors recorded.</p>";
+    } else {
+      container.innerHTML = logs.map(e => `
+        <div class="error-entry">
+          <strong>${e.type.toUpperCase()}</strong>: ${e.message}<br/>
+          <small>${e.source} [${e.lineno}:${e.colno}]</small><br/>
+          <small><em>${e.time}</em> — <code>${e.version || 'unknown'}</code></small>
+          <pre>${e.stack || ''}</pre>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('clearErrorLogBtn').addEventListener('click', () => {
+      if (confirm("Clear all error logs?")) {
+        clearErrorLog();
+        container.innerHTML = "<p>Error log cleared.</p>";
+      }
+    });
+  </script>
+</body>
+</html>
+
