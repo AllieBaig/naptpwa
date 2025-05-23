@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- MIT License – AllieBaig – https://github.com/AllieBaig/naptpwa/blob/main/LICENSE -->
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0055aa" />
+  <meta name="description" content="NAPT Word Game - Modular PWA" />
+  <title>NAPT Word Game</title>
+
+  <!-- Settings preload -->
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const font = localStorage.getItem('napt-font');
+      const theme = localStorage.getItem('napt-theme');
+      const contrast = localStorage.getItem('napt-contrast');
+      if (font) root.classList.add(`font-${font}`);
+      if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
+      if (contrast === 'true') root.classList.add('theme-high-contrast');
+    })();
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+</head>
+
+<body>
+  <header>
+    <h1>NAPT Word Game</h1>
+    <p>Select a mode to begin</p>
+  </header>
+
+  <main id="menu" class="active">
+    <div id="mode-buttons" class="mode-buttons">
+      <button class="menu-btn" data-mode="regular">🧠 Solo Mode</button>
+      <button class="menu-btn" data-mode="wordRelic">🏺 Word Relic</button>
+      <button class="menu-btn" data-mode="wordSafari">🦁 Word Safari</button>
+      <button class="menu-btn" data-mode="dice">🎲 Dice Challenge</button>
+      <button class="menu-btn" data-mode="atlas">🗺️ Word Atlas</button>
+      <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
+      <button class="menu-btn" data-mode="trail">🪄 Trail of Letters</button>
+      <button class="menu-btn" data-mode="nearby">📍 Play Nearby</button>
+    </div>
+
+    <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
+      <summary><strong>⚙️ Settings</strong></summary>
+      <div style="margin-top: 1rem;">
+        <label for="fontSelector">Font:</label><br/>
+        <select id="fontSelector">
+          <option value="">System Default</option>
+          <option value="domine">Domine</option>
+          <option value="merriweather">Merriweather</option>
+          <option value="lora">Lora</option>
+          <option value="tinos">Tinos</option>
+        </select><br/>
+
+        <label for="themeSelector">Theme:</label><br/>
+        <select id="themeSelector">
+          <option value="system">System Default</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select><br/>
+
+        <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
+        <label><input type="checkbox" id="voiceHelpToggle" /> Voice Instructions</label><br/>
+        <label><input type="checkbox" id="resumeToggle" /> Resume Last Game on Load</label><br/>
+
+        <label for="difficultySelector">Difficulty:</label><br/>
+        <select id="difficultySelector">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select><br/>
+
+        <label for="radiusSelector">Map Radius (for Nearby Mode):</label><br/>
+        <select id="radiusSelector">
+          <option value="3">3 km</option>
+          <option value="10" selected>10 km</option>
+          <option value="50">50 km</option>
+          <option value="200">200 km</option>
+        </select>
+      </div>
+    </details>
+  </main>
+
+  <div id="game" class="game-container"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="scripts/gameNavigation.js"></script>
+  <script src="scripts/serviceWorkerRegistration.js"></script>
+  <script type="module">
+    import { applyUserSettings } from './scripts/utils/settings.js';
+    import { injectResetPWA } from './scripts/utils/debugTools.js';
+    import { getLastMode } from './scripts/utils/autosave.js';
+    import { navigateToMode } from './scripts/gameNavigation.js';
+    import './scripts/utils/errorHandler.js';
+
+    applyUserSettings();
+    injectResetPWA();
+
+    const shouldResume = localStorage.getItem('napt-resume') === 'true';
+    const lastMode = getLastMode();
+    if (shouldResume && lastMode) {
+      navigateToMode(lastMode);
+    }
+  </script>
+</body>
+</html>
+
