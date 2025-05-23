@@ -13,7 +13,7 @@ const modeMap = {
   atlas: './modes/atlas.js',
   versus: './modes/versus.js',
   trail: './modes/trail.js',
-  nearby: './modes/nearby.js'
+  nearby: './modes/nearby.js',
 };
 
 function showError(message) {
@@ -50,7 +50,7 @@ export function showMenu() {
 
   settings?.style.setProperty('display', '');
   errorLink?.style.setProperty('display', 'block');
-  modeButtons?.classList.remove('hidden');
+  modeButtons?.style.setProperty('display', 'flex');
 
   document.getElementById('mode-error-box')?.remove();
   window.__LAST_LOADED_VERSION = 'mainMenu';
@@ -72,7 +72,7 @@ export async function navigateToMode(mode) {
 
     document.getElementById('settings-panel')?.style.setProperty('display', 'none');
     document.getElementById('error-viewer-link')?.style.setProperty('display', 'none');
-    document.getElementById('mode-buttons')?.classList.add('hidden');
+    document.getElementById('mode-buttons')?.style.setProperty('display', 'none');
 
     window.__LAST_LOADED_VERSION = `${mode}.js ${versionMap[mode] || 'v?'}`;
   } catch (err) {
