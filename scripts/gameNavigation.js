@@ -1,5 +1,4 @@
-// MIT License
-// Copyright (c) 2025 AllieBaig
+// MIT License – Copyright (c) 2025 AllieBaig
 // https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
 import { saveLastMode } from './utils/autosave.js';
@@ -13,7 +12,8 @@ const modeMap = {
   dice: './modes/dice.js',
   atlas: './modes/atlas.js',
   versus: './modes/versus.js',
-  trail: './modes/trail.js'
+  trail: './modes/trail.js',
+  nearby: './modes/nearby.js'
 };
 
 function showError(message) {
