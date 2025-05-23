@@ -9,6 +9,7 @@
   <meta name="description" content="NAPT Word Game - Modular PWA" />
   <title>NAPT Word Game</title>
 
+  <!-- Settings preload -->
   <script>
     (() => {
       const root = document.documentElement;
@@ -42,6 +43,7 @@
       <button class="menu-btn" data-mode="atlas">🗺️ Word Atlas</button>
       <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
       <button class="menu-btn" data-mode="trail">🪄 Trail of Letters</button>
+      <button class="menu-btn" data-mode="nearby">📍 Play Nearby</button>
     </div>
 
     <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
@@ -72,6 +74,14 @@
           <option value="easy">Easy</option>
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
+        </select><br/>
+
+        <label for="radiusSelector">Map Radius (for Nearby Mode):</label><br/>
+        <select id="radiusSelector">
+          <option value="3">3 km</option>
+          <option value="10" selected>10 km</option>
+          <option value="50">50 km</option>
+          <option value="200">200 km</option>
         </select>
       </div>
     </details>
@@ -79,7 +89,7 @@
 
   <div id="game" class="game-container"></div>
 
-  <!-- Core Scripts -->
+  <!-- Scripts -->
   <script type="module" src="scripts/gameNavigation.js"></script>
   <script src="scripts/serviceWorkerRegistration.js"></script>
   <script type="module">
