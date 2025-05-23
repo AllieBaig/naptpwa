@@ -8,8 +8,8 @@ import { showError } from './errorBox.js';
 import { versionMap } from './version.js';
 
 const modeMap = {
-  regular: '../modes/regular.js',
-  wordRelic: '../modes/wordRelic.js',
+  regular: '/modes/regular.js',
+  wordRelic: '/modes/wordRelic.js',
   wordSafari: '../modes/wordSafari.js',
   dice: '../modes/dice.js',
   atlas: '../modes/atlas.js',
