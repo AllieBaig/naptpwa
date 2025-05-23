@@ -1,31 +1,33 @@
+// MIT License – AllieBaig – https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
 
+const FONT_SCALE_KEY = 'napt-font-scale';
 
-// MIT License
-// Copyright (c) 2025 AllieBaig
-// https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
-
-const FONT_SIZE_KEY = 'napt-fontSize';
-
-export function applyFontControls(container, key = '#game') {
-  const target = document.querySelector(key);
-  if (!target || !container) return;
-
-  const storedSize = parseInt(localStorage.getItem(FONT_SIZE_KEY)) || 100;
-  target.style.fontSize = `${storedSize}%`;
-
-  const smaller = container.querySelector('#fontSmaller');
-  const larger = container.querySelector('#fontLarger');
-
-  smaller?.addEventListener('click', () => adjustFont(-10, target));
-  larger?.addEventListener('click', () => adjustFont(10, target));
+export function getFontScale() {
+  return parseFloat(localStorage.getItem(FONT_SCALE_KEY)) || 1;
 }
 
-function adjustFont(delta, target) {
-  const currentSize = parseInt(target.style.fontSize) || 100;
-  let newSize = currentSize + delta;
-  newSize = Math.max(60, Math.min(newSize, 200)); // clamp 60–200%
+export function setFontScale(value) {
+  const scale = Math.max(0.8, Math.min(2, value)); // limit 80%–200%
+  localStorage.setItem(FONT_SCALE_KEY, scale);
+  document.documentElement.style.setProperty('--font-scale', scale);
+}
 
-  target.style.fontSize = `${newSize}%`;
-  localStorage.setItem(FONT_SIZE_KEY, newSize);
+export function injectFontControls(targetEl = document.body) {
+  const wrapper = document.createElement('div');
+  wrapper.className = 'font-controls';
+  wrapper.innerHTML = `
+    <button id="fontMinus" aria-label="Decrease font size">➖</button>
+    <button id="fontPlus" aria-label="Increase font size">➕</button>
+  `;
+  targetEl.appendChild(wrapper);
+
+  document.getElementById('fontMinus')?.addEventListener('click', () => {
+    const scale = getFontScale() - 0.1;
+    setFontScale(scale);
+  });
+  document.getElementById('fontPlus')?.addEventListener('click', () => {
+    const scale = getFontScale() + 0.1;
+    setFontScale(scale);
+  });
 }
 
