@@ -1,81 +1,71 @@
-// MIT License
-// Copyright (c) 2025 AllieBaig
-// Licensed under the MIT License.
-// See https://github.com/AllieBaig/naptpwa/blob/main/LICENSE for details.
+// MIT License – Copyright (c) 2025 AllieBaig
+// https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+// File: dice.js
+// Purpose: Implements Dice Challenge mode with timed prompt and letter roll
 
-export function init({ showMenu }) {
+import { getRandomLetter } from '../utils/randomizer.js';
+import { injectFontControls, setFontScale, getFontScale } from '../utils/fontControls.js';
+import { getEasyHintOptions } from '../utils/clues.js';
+import { saveGameResult } from '../utils/history.js';
+import { updateStreak } from '../utils/streak.js';
+import { startTimer } from '../utils/timer.js';
+
+export default function init({ showMenu }) {
   const game = document.getElementById('game');
   if (!game) return;
 
-  const letter = rollLetter();
-  let timerInterval = null;
-  let secondsLeft = 60;
+  const letter = getRandomLetter();
+  const difficulty = localStorage.getItem('napt-difficulty') || 'easy';
+  const categories = ['Name', 'Place', 'Animal', 'Thing'];
 
-  game.innerHTML = `
-    <h2>🎲 Dice Challenge</h2>
-    <p id="rolled-letter" style="font-size: 2rem;">You rolled: <strong>${letter}</strong></p>
-    <p id="timer" class="feedback">⏳ Time Left: <strong>60s</strong></p>
+  game.classList.add('active');
+  game.innerHTML = '';
 
-    <form id="dice-form" class="dice-form" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem;">
-      <label>Name: <input type="text" name="name" required /></label>
-      <label>Place: <input type="text" name="place" required /></label>
-      <label>Animal: <input type="text" name="animal" required /></label>
-      <label>Thing: <input type="text" name="thing" required /></label>
-      <button type="submit">Submit</button>
-    </form>
+  let html = `<button onclick="(${showMenu})()" class="menu-btn">⬅ Back to Menu</button>`;
+  html += `<h2>Dice Challenge 🎲 – Letter <span style="font-size: 1.3em;">${letter}</span></h2>`;
+  html += `<div id="timerBox">⏱️ 1:00</div>`;
+  html += `<form id="diceForm">`;
 
-    <div id="dice-feedback" class="feedback" style="margin-top: 0.5rem;"></div>
-    <button class="back-btn" style="margin-top: 1.5rem;">◀️ Back to Menu</button>
-  `;
+  categories.forEach(category => {
+    html += `<label><strong>${category}</strong><br/><input type="text" name="${category.toLowerCase()}" required /></label><br/>`;
 
-  const form = document.getElementById('dice-form');
-  const feedback = document.getElementById('dice-feedback');
-  const timerDisplay = document.getElementById('timer');
-
-  startTimer();
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    stopTimer();
-
-    const data = Object.fromEntries(new FormData(form));
-    const missed = Object.entries(data).filter(([k, v]) => !v.trim().toLowerCase().startsWith(letter.toLowerCase()));
-
-    if (missed.length > 0) {
-      feedback.textContent = `❌ Incorrect. These didn’t start with "${letter}": ${missed.map(([k]) => k).join(', ')}`;
-      feedback.style.color = 'red';
-    } else {
-      feedback.textContent = `✅ All correct! Great job!`;
-      feedback.style.color = 'green';
+    if (difficulty === 'easy') {
+      const hints = getEasyHintOptions(letter, category);
+      html += `<div class="easy-hint">Try one: ${hints.map(h => `<span class="hint-word">${h}</span>`).join(' ')}</div>`;
     }
   });
 
-  function startTimer() {
-    timerInterval = setInterval(() => {
-      secondsLeft--;
-      timerDisplay.innerHTML = `⏳ Time Left: <strong>${secondsLeft}s</strong>`;
-      if (secondsLeft <= 0) {
-        stopTimer();
-        form.querySelector('button[type="submit"]').click(); // auto-submit
-      }
-    }, 1000);
-  }
+  html += `<br/><button type="submit">Submit</button></form>`;
+  html += `<div id="result" style="margin-top:1rem;"></div>`;
 
-  function stopTimer() {
-    clearInterval(timerInterval);
-  }
+  game.innerHTML = html;
+  injectFontControls(game);
+  setFontScale(getFontScale());
 
-  document.querySelector('.back-btn')?.addEventListener('click', () => {
-    stopTimer();
-    showMenu();
+  // Timer logic
+  startTimer(60, document.getElementById('timerBox'), () => {
+    document.querySelector('#diceForm button[type="submit"]').disabled = true;
+    document.getElementById('result').textContent = '⏰ Time is up! Submit is disabled.';
   });
 
-  document.querySelector('main')?.classList.remove('active');
-  game.classList.add('active');
-}
+  const form = document.getElementById('diceForm');
+  const resultBox = document.getElementById('result');
 
-function rollLetter() {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  return alphabet[Math.floor(Math.random() * alphabet.length)];
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    const filled = Object.values(data).every(val => val.trim().length > 0);
+
+    if (!filled) {
+      resultBox.textContent = 'Please fill in all fields!';
+      return;
+    }
+
+    saveGameResult('dice', { letter, ...data });
+    updateStreak('dice');
+
+    resultBox.innerHTML = `✅ Challenge complete!<br/>Letter: <strong>${letter}</strong><br/>
+    <button onclick="(${init})({showMenu})">New Dice Roll</button>`;
+  });
 }
 
