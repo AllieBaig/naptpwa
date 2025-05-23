@@ -1,37 +1,41 @@
+<!--
+MIT License – Copyright (c) 2025 AllieBaig
+https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- MIT License – AllieBaig – https://github.com/AllieBaig/naptpwa/blob/main/LICENSE -->
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="theme-color" content="#0055aa" />
-  <meta name="description" content="NAPT Word Game - Modular PWA" />
-  <title>NAPT Word Game</title>
+  <meta name="description" content="NAPT Word Game (Site2 Test)" />
+  <title>NAPT Word Game (Site2)</title>
 
-  <!-- Settings preload -->
+  <!-- Theme & Font Classes -->
   <script>
-    (() => {
-      const root = document.documentElement;
-      const font = localStorage.getItem('napt-font');
-      const theme = localStorage.getItem('napt-theme');
-      const contrast = localStorage.getItem('napt-contrast');
-      if (font) root.classList.add(`font-${font}`);
-      if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
-      if (contrast === 'true') root.classList.add('theme-high-contrast');
-    })();
+    const root = document.documentElement;
+    const font = localStorage.getItem('napt-font');
+    const theme = localStorage.getItem('napt-theme');
+    const contrast = localStorage.getItem('napt-contrast');
+    const useEmojis = localStorage.getItem('napt-use-emojis');
+
+    if (font) root.classList.add(`font-${font}`);
+    if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
+    if (contrast === 'true') root.classList.add('theme-high-contrast');
+    if (useEmojis === 'false') root.classList.add('no-emojis');
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="styles/main.css" />
-  <link rel="icon" href="icons/icon-192.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
+  <link rel="manifest" href="../manifest.json" />
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="icon" href="../icons/icon-192.png" type="image/png" />
 </head>
 
 <body>
   <header>
-    <h1>NAPT Word Game</h1>
-    <p>Select a mode to begin</p>
+    <h1>NAPT Word Game – Site2 Test</h1>
+    <p>This version uses <code>/Site2/scripts/</code> as the source.</p>
   </header>
 
   <main id="menu" class="active">
@@ -66,17 +70,17 @@
         </select><br/>
 
         <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
-        <label><input type="checkbox" id="voiceHelpToggle" /> Voice Instructions</label><br/>
+        <label><input type="checkbox" id="emojiToggle" /> Show Emojis in Game Labels</label><br/>
         <label><input type="checkbox" id="resumeToggle" /> Resume Last Game on Load</label><br/>
 
         <label for="difficultySelector">Difficulty:</label><br/>
         <select id="difficultySelector">
-          <option value="easy">Easy</option>
+          <option value="easy" selected>Easy</option>
           <option value="medium">Medium</option>
           <option value="hard">Hard</option>
         </select><br/>
 
-        <label for="radiusSelector">Map Radius (for Nearby Mode):</label><br/>
+        <label for="radiusSelector">Map Radius:</label><br/>
         <select id="radiusSelector">
           <option value="3">3 km</option>
           <option value="10" selected>10 km</option>
@@ -89,25 +93,18 @@
 
   <div id="game" class="game-container"></div>
 
-  <!-- Scripts -->
-  <script type="module" src="scripts/gameNavigation.js"></script>
-  <script src="scripts/serviceWorkerRegistration.js"></script>
+  <div id="error-viewer-link" style="text-align:center; margin-top:1rem;">
+    <a href="../scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>
+  </div>
+
+  <!-- Load all scripts from Site2/scripts -->
   <script type="module">
-    import { applyUserSettings } from './scripts/utils/settings.js';
-    import { injectResetPWA } from './scripts/utils/debugTools.js';
-    import { getLastMode } from './scripts/utils/autosave.js';
-    import { navigateToMode } from './scripts/gameNavigation.js';
-    import './scripts/utils/errorHandler.js';
-
-    applyUserSettings();
-    injectResetPWA();
-
-    const shouldResume = localStorage.getItem('napt-resume') === 'true';
-    const lastMode = getLastMode();
-    if (shouldResume && lastMode) {
-      navigateToMode(lastMode);
-    }
+    const site2 = './Site2/scripts/';
+    await import(site2 + 'main.js');
+    await import(site2 + 'gameNavigation.js');
   </script>
+
+  <script src="../scripts/serviceWorkerRegistration.js"></script>
 </body>
 </html>
 
