@@ -1,5 +1,5 @@
 
-// modeLoader js
+// scripts/utils/modeLoader.js
 
 import { saveLastMode } from './autosave.js';
 import { resetGameContainer } from './gameUI.js';
@@ -8,14 +8,15 @@ import { showError } from './errorBox.js';
 import { versionMap } from './version.js';
 
 const modeMap = {
-  regular: 'scripts/modes/regular.js',
-  wordRelic: 'scripts/modes/wordRelic.js',
-  wordSafari: '/modes/wordSafari.js',
-  dice: '/modes/dice.js',
-  atlas: '/modes/atlas.js',
-  versus: '/modes/versus.js',
-  trail: '/modes/trail.js',
-  nearby: '/modes/nearby.js',
+  // Use absolute paths from the GitHub Pages root (e.g., /naptpwa/scripts/modes/...)
+  regular: '/naptpwa/scripts/modes/regular.js',
+  wordRelic: '/naptpwa/scripts/modes/wordRelic.js',
+  wordSafari: '/naptpwa/scripts/modes/wordSafari.js',
+  dice: '/naptpwa/scripts/modes/dice.js',
+  atlas: '/naptpwa/scripts/modes/atlas.js',
+  versus: '/naptpwa/scripts/modes/versus.js',
+  trail: '/naptpwa/scripts/modes/trail.js',
+  nearby: '/naptpwa/scripts/modes/nearby.js',
 };
 
 export async function navigateToMode(mode) {
