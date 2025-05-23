@@ -1,69 +1,63 @@
-
-
-// MIT License
-// Copyright (c) 2025 AllieBaig
+// MIT License – Copyright (c) 2025 AllieBaig
 // https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+// File: wordSafari.js
+// Purpose: Freeform category-based word listing mode with hints and emoji support
 
-import { safariPrompts } from '../utils/clues.js';
-import { getRandomPromptsByCategory } from '../utils/randomizer.js';
-import { speak } from '../utils/voice.js';
-import { versionMap } from '../utils/version.js';
-import { resetGameContainer } from '../utils/gameUI.js';
+import { getRandomLetter } from '../utils/randomizer.js';
+import { getEasyHintOptions } from '../utils/clues.js';
+import { injectFontControls, setFontScale, getFontScale } from '../utils/fontControls.js';
+import { saveGameResult } from '../utils/history.js';
+import { updateStreak } from '../utils/streak.js';
 
-export function init({ showMenu }) {
-  resetGameContainer();
-  window.__LAST_LOADED_VERSION = `wordSafari.js ${versionMap.wordSafari}`;
-
+export default function init({ showMenu }) {
   const game = document.getElementById('game');
   if (!game) return;
 
-  game.innerHTML = `
-    <h2>🦁 Word Safari</h2>
-    <div id="prompt" class="feedback"></div>
-    
-    <form id="safari-form" class="regular-form">
-      <input type="text" id="safari-input" placeholder="Your answer..." required />
-      <button type="submit">Submit</button>
-    </form>
+  const letter = getRandomLetter();
+  const difficulty = localStorage.getItem('napt-difficulty') || 'easy';
+  const categories = ['Name', 'Place', 'Animal', 'Thing'];
 
-    <div id="safari-feedback" class="feedback" style="margin-top:0.5rem;"></div>
-    <button id="refreshPromptsBtn">🔄 New Questions</button>
-    <button class="back-btn" style="margin-top:1rem;">◀ Back to Menu</button>
-  `;
+  game.classList.add('active');
+  game.innerHTML = '';
 
-  const promptBox = document.getElementById('prompt');
-  const input = document.getElementById('safari-input');
-  const feedback = document.getElementById('safari-feedback');
+  let html = `<button onclick="(${showMenu})()" class="menu-btn">⬅ Back to Menu</button>`;
+  html += `<h2>Word Safari 🦁 – Letter <span style="font-size: 1.3em;">${letter}</span></h2>`;
+  html += `<p>Type a word in each category that starts with <strong>${letter}</strong>.</p>`;
+  html += `<form id="safariForm">`;
 
-  let currentPrompt = '';
-
-  function showNewPrompt() {
-    const random = getRandomPromptsByCategory(safariPrompts, 1);
-    const cat = Object.keys(random)[0];
-    const prompt = random[cat][0];
-    currentPrompt = prompt;
-
-    promptBox.innerHTML = `<strong>${cat.toUpperCase()}</strong>: ${prompt}`;
-    feedback.textContent = '';
-    input.value = '';
-    speak(prompt);
-  }
-
-  document.getElementById('safari-form')?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const answer = input.value.trim();
-    if (answer) {
-      feedback.textContent = `✅ Submitted: ${answer}`;
-      feedback.style.color = 'green';
-    } else {
-      feedback.textContent = '⚠️ Please enter something.';
-      feedback.style.color = 'orange';
+  categories.forEach(cat => {
+    html += `<label><strong>${cat}</strong><br/><input type="text" name="${cat.toLowerCase()}" required /></label><br/>`;
+    if (difficulty === 'easy') {
+      const hints = getEasyHintOptions(letter, cat);
+      html += `<div class="easy-hint">Try one: ${hints.map(h => `<span class="hint-word">${h}</span>`).join(' ')}</div>`;
     }
   });
 
-  document.getElementById('refreshPromptsBtn')?.addEventListener('click', showNewPrompt);
-  document.querySelector('.back-btn')?.addEventListener('click', showMenu);
+  html += `<br/><button type="submit">Submit</button></form>`;
+  html += `<div id="result" style="margin-top:1rem;"></div>`;
 
-  showNewPrompt();
+  game.innerHTML = html;
+  injectFontControls(game);
+  setFontScale(getFontScale());
+
+  const form = document.getElementById('safariForm');
+  const resultBox = document.getElementById('result');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(form));
+    const filled = Object.values(data).every(val => val.trim().length > 0);
+
+    if (!filled) {
+      resultBox.textContent = 'Please fill in all fields!';
+      return;
+    }
+
+    saveGameResult('wordSafari', { letter, ...data });
+    updateStreak('wordSafari');
+
+    resultBox.innerHTML = `✅ Great job explorer!<br/>Letter: <strong>${letter}</strong><br/>
+    <button onclick="(${init})({showMenu})">New Safari</button>`;
+  });
 }
 
