@@ -1,150 +1,115 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="theme-color" content="#0055aa" />
-  <meta name="description" content="NAPT Word Game (Site2 Test)" />
-  <title>NAPT Word Game (Site2)</title>
+  <!-- MIT License – AllieBaig – https://github.com/AllieBaig/naptpwa/blob/main/LICENSE -->
 
-    <script>
-        // --- Fallback Mechanism for Original Site ---
-        // This is the URL where your Site2 PWA is *actually hosted*.
-        // If Site2 is located within your naptpwa repo, it might be:
-        // "https://alliebaig.github.io/naptpwa/Site2/"
-        // If it's a completely separate domain, use that (e.g., "https://naptpwabackup.com/").
-        // !!! IMPORTANT: YOU MUST UPDATE THIS URL !!!
-        const fallbackSiteUrl = "https://alliebaig.github.io/naptpwa/Site2/"; 
-        const criticalResourceLoadDelayMs = 4000; // Time in milliseconds to wait for critical resources (4 seconds)
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#0055aa" />
+  <meta name="description" content="NAPT Word Game - Modular PWA" />
+  <title>NAPT Word Game</title>
 
-        let initialLoadCompleted = false;
-        let errorsDetected = 0;
-        const errorThreshold = 2; // Number of errors before triggering redirect
+  <!-- Settings preload -->
+  <script>
+    (() => {
+      const root = document.documentElement;
+      const font = localStorage.getItem('napt-font');
+      const theme = localStorage.getItem('napt-theme');
+      const contrast = localStorage.getItem('napt-contrast');
+      if (font) root.classList.add(`font-${font}`);
+      if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
+      if (contrast === 'true') root.classList.add('theme-high-contrast');
+    })();
+  </script>
 
-        // Global error handler for uncaught JavaScript errors
-        window.onerror = function(message, source, lineno, colno, error) {
-            errorsDetected++;
-            console.error("Critical JS Error on original site:", message, source, lineno);
-            // Trigger fallback if enough errors accumulate
-            if (errorsDetected >= errorThreshold) {
-                console.warn("Too many JS errors. Redirecting to fallback site:", fallbackSiteUrl);
-                window.location.replace(fallbackSiteUrl); // Use replace() to prevent back button issues
-            }
-            return true; // Prevent default browser error reporting
-        };
-
-        // Fallback check if DOMContentLoaded doesn't fire or main critical scripts fail to load
-        document.addEventListener('DOMContentLoaded', () => {
-            initialLoadCompleted = true; // DOM is ready, base HTML loaded
-            console.log("Original site DOMContentLoaded.");
-            // You could add more specific checks here for essential elements or global variables
-            // that should be present after main scripts load successfully.
-        });
-
-        // Timeout to catch issues that don't trigger onerror or DOMContentLoaded
-        setTimeout(() => {
-            // If DOMContentLoaded never fired (page hung/critical HTML error)
-            // OR if the page loaded but errors accumulated (like 404s for critical JS/CSS preventing functionality)
-            if (!initialLoadCompleted || errorsDetected > 0) {
-                console.warn("Original site did not load fully or encountered errors. Initiating fallback.");
-                window.location.replace(fallbackSiteUrl);
-            } else {
-                console.info("Original site loaded successfully with no critical errors detected.");
-            }
-        }, criticalResourceLoadDelayMs);
-    </script>
-        <script>
-    const root = document.documentElement;
-    const font = localStorage.getItem('napt-font');
-    const theme = localStorage.getItem('napt-theme');
-    const contrast = localStorage.getItem('napt-contrast');
-    const useEmojis = localStorage.getItem('napt-use-emojis');
-
-    if (font) root.classList.add(`font-${font}`);
-    if (theme === 'light' || theme === 'dark') root.classList.add(`theme-${theme}`);
-    if (contrast === 'true') root.classList.add('theme-high-contrast');
-    if (useEmojis === 'false') root.classList.add('no-emojis');
-  </script>
-
-    <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet">
-
-    <link rel="manifest" href="/naptpwa/manifest.json" />
-  <link rel="stylesheet" href="/naptpwa/styles/main.css" />
-  <link rel="icon" href="/naptpwa/icons/icon-192.png" type="image/png" />
-  
-    <script src="/naptpwa/scripts/serviceWorkerRegistration.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Domine&family=Lora&family=Merriweather&family=Tinos&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="styles/main.css" />
+  <link rel="icon" href="icons/icon-192.png" type="image/png" />
 </head>
 
 <body>
-  <header>
-    <h1>NAPT Word Game – Site2 Test</h1>
-    <p>This version uses <code>/naptpwa/Site2/scripts/</code> as the source.</p>
-  </header>
+  <header>
+    <h1>NAPT Word Game</h1>
+    <p>Select a mode to begin</p>
+  </header>
 
-  <main id="menu" class="active">
-    <div id="mode-buttons" class="mode-buttons">
-      <button class="menu-btn" data-mode="regular">🧠 Solo Mode</button>
-      <button class="menu-btn" data-mode="wordRelic">🏺 Word Relic</button>
-      <button class="menu-btn" data-mode="wordSafari">🦁 Word Safari</button>
-      <button class="menu-btn" data-mode="dice">🎲 Dice Challenge</button>
-      <button class="menu-btn" data-mode="atlas">🗺️ Word Atlas</button>
-      <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
-      <button class="menu-btn" data-mode="trail">🪄 Trail of Letters</button>
-      <button class="menu-btn" data-mode="nearby">📍 Play Nearby</button>
-    </div>
+  <main id="menu" class="active">
+    <div id="mode-buttons" class="mode-buttons">
+      <button class="menu-btn" data-mode="regular">🧠 Solo Mode</button>
+      <button class="menu-btn" data-mode="wordRelic">🏺 Word Relic</button>
+      <button class="menu-btn" data-mode="wordSafari">🦁 Word Safari</button>
+      <button class="menu-btn" data-mode="dice">🎲 Dice Challenge</button>
+      <button class="menu-btn" data-mode="atlas">🗺️ Word Atlas</button>
+      <button class="menu-btn" data-mode="versus">🤖 Play vs Computer</button>
+      <button class="menu-btn" data-mode="trail">🪄 Trail of Letters</button>
+      <button class="menu-btn" data-mode="nearby">📍 Play Nearby</button>
+    </div>
 
-    <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
-      <summary><strong>⚙️ Settings</strong></summary>
-      <div style="margin-top: 1rem;">
-        <label for="fontSelector">Font:</label><br/>
-        <select id="fontSelector">
-          <option value="">System Default</option>
-          <option value="domine">Domine</option>
-          <option value="merriweather">Merriweather</option>
-          <option value="lora">Lora</option>
-          <option value="tinos">Tinos</option>
-        </select><br/>
+    <details id="settings-panel" style="padding: 1rem; max-width: 800px; margin: auto;">
+      <summary><strong>⚙️ Settings</strong></summary>
+      <div style="margin-top: 1rem;">
+        <label for="fontSelector">Font:</label><br/>
+        <select id="fontSelector">
+          <option value="">System Default</option>
+          <option value="domine">Domine</option>
+          <option value="merriweather">Merriweather</option>
+          <option value="lora">Lora</option>
+          <option value="tinos">Tinos</option>
+        </select><br/>
 
-        <label for="themeSelector">Theme:</label><br/>
-        <select id="themeSelector">
-          <option value="system">System Default</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select><br/>
+        <label for="themeSelector">Theme:</label><br/>
+        <select id="themeSelector">
+          <option value="system">System Default</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select><br/>
 
-        <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
-        <label><input type="checkbox" id="emojiToggle" /> Show Emojis in Game Labels</label><br/>
-        <label><input type="checkbox" id="resumeToggle" /> Resume Last Game on Load</label><br/>
+        <label><input type="checkbox" id="highContrastToggle" /> High Contrast Mode</label><br/>
+        <label><input type="checkbox" id="voiceHelpToggle" /> Voice Instructions</label><br/>
+        <label><input type="checkbox" id="resumeToggle" /> Resume Last Game on Load</label><br/>
 
-        <label for="difficultySelector">Difficulty:</label><br/>
-        <select id="difficultySelector">
-          <option value="easy" selected>Easy</option>
-          <option value="medium">Medium</option>
-          <option value="hard">Hard</option>
-        </select><br/>
+        <label for="difficultySelector">Difficulty:</label><br/>
+        <select id="difficultySelector">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select><br/>
 
-        <label for="radiusSelector">Map Radius:</label><br/>
-        <select id="radiusSelector">
-          <option value="3">3 km</option>
-          <option value="10" selected>10 km</option>
-          <option value="50">50 km</option>
-          <option value="200">200 km</option>
-        </select>
-      </div>
-    </details>
-  </main>
+        <label for="radiusSelector">Map Radius (for Nearby Mode):</label><br/>
+        <select id="radiusSelector">
+          <option value="3">3 km</option>
+          <option value="10" selected>10 km</option>
+          <option value="50">50 km</option>
+          <option value="200">200 km</option>
+        </select>
+      </div>
+    </details>
+  </main>
 
-  <div id="game" class="game-container"></div>
+  <div id="game" class="game-container"></div>
 
-  <div id="error-viewer-link" style="text-align:center; margin-top:1rem;">
-        <a href="/naptpwa/scripts/utils/error-log.html" target="_blank" style="font-size: 0.9rem;">🐞 View Error Log</a>
-  </div>
+  <!-- Scripts -->
+  <script type="module" src="scripts/gameNavigation.js"></script>
+  <script src="scripts/serviceWorkerRegistration.js"></script>
+  <script type="module">
+    import { applyUserSettings } from './scripts/utils/settings.js';
+    import { injectResetPWA } from './scripts/utils/debugTools.js';
+    import { getLastMode } from './scripts/utils/autosave.js';
+    import { navigateToMode } from './scripts/gameNavigation.js';
+    import './scripts/utils/errorHandler.js';
 
-    <script type="module">
-    const site2 = '/naptpwa/Site2/scripts/'; // Use absolute path from GitHub Pages root
-    await import(site2 + 'main.js'); // This will load /naptpwa/Site2/scripts/main.js
-    await import(site2 + 'gameNavigation.js'); // This will load /naptpwa/Site2/scripts/gameNavigation.js
-  </script>
+    applyUserSettings();
+    injectResetPWA();
 
+    const shouldResume = localStorage.getItem('napt-resume') === 'true';
+    const lastMode = getLastMode();
+    if (shouldResume && lastMode) {
+      navigateToMode(lastMode);
+    }
+  </script>
 </body>
 </html>
+
