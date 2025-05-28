@@ -1,63 +1,54 @@
-// MIT License – Copyright (c) 2025 AllieBaig
-// https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
-// File: wordRelic.js
-// Purpose: Game mode where players guess themed words to restore a relic
 
-import { getRandomLetter } from '../utils/randomizer.js';
-import { getEasyHintOptions } from '../utils/clues.js';
-import { injectFontControls, getFontScale, setFontScale } from '../utils/fontControls.js';
-import { saveGameResult } from '../utils/history.js';
-import { updateStreak } from '../utils/streak.js';
+/**
+ * Word Relic Mode — Initializes emoji riddles with 4-part logic.
+ * Each question has a clue and four MCQ options. Rewards XP on success.
+ * Uses shared DOM: #sentenceClue, #sentenceBuilderArea, #resultSummary, #xpTracker
+ * Depends on: questionPool.js, mcqAutoCheck.js, xpTracker.js
+ * Related lang files: lang/wordrelic-fr.json, lang/wordrelic-es.json, etc.
+ * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
+ * Timestamp: 2025-05-28 13:42 | File: scripts/modes/wordRelic.js
+ */
 
-export default function init({ showMenu }) {
-  const game = document.getElementById('game');
-  if (!game) return;
+import { loadQuestionsForMode } from '../utils/questionPool.js';
+import { setupMCQ } from '../utils/mcqAutoCheck.js';
+import { awardXP } from '../utils/xpTracker.js';
 
-  const letter = getRandomLetter();
-  const difficulty = localStorage.getItem('napt-difficulty') || 'easy';
-  const categories = ['Name', 'Place', 'Animal', 'Thing'];
+export async function initWordRelic(lang = 'fr') {
+  const clueEl = document.querySelector('#sentenceClue');
+  const builderEl = document.querySelector('#sentenceBuilderArea');
+  const resultEl = document.querySelector('#resultSummary');
 
-  game.classList.add('active');
-  game.innerHTML = '';
+  clueEl.textContent = '🗝️ Solve the riddle to unlock the relic!';
+  builderEl.innerHTML = '';
+  resultEl.textContent = '';
 
-  let html = `<button onclick="(${showMenu})()" class="menu-btn">⬅ Back to Menu</button>`;
-  html += `<h2>Word Relic 🏺 – Letter <span style="font-size:1.3em;">${letter}</span></h2>`;
-  html += `<p>Solve the four clues to restore the ancient relic.</p>`;
-  html += `<form id="relicForm">`;
+  const questions = await loadQuestionsForMode('wordrelic', lang);
+  let currentIndex = 0;
 
-  categories.forEach(cat => {
-    html += `<label><strong>${cat}</strong><br/><input type="text" name="${cat.toLowerCase()}" required /></label><br/>`;
-    if (difficulty === 'easy') {
-      const hints = getEasyHintOptions(letter, cat);
-      html += `<div class="easy-hint">Try one: ${hints.map(h => `<span class="hint-word">${h}</span>`).join(' ')}</div>`;
-    }
-  });
-
-  html += `<br/><button type="submit">Submit</button></form>`;
-  html += `<div id="result" style="margin-top:1rem;"></div>`;
-
-  game.innerHTML = html;
-  injectFontControls(game);
-  setFontScale(getFontScale());
-
-  const form = document.getElementById('relicForm');
-  const resultBox = document.getElementById('result');
-
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const data = Object.fromEntries(new FormData(form));
-    const filled = Object.values(data).every(val => val.trim().length > 0);
-
-    if (!filled) {
-      resultBox.textContent = 'Please fill in all fields!';
+  function showNextQuestion() {
+    if (currentIndex >= questions.length) {
+      resultEl.textContent = '🏆 You’ve completed all relics!';
       return;
     }
 
-    saveGameResult('wordRelic', { letter, ...data });
-    updateStreak('wordRelic');
+    const q = questions[currentIndex];
+    clueEl.innerHTML = `<div class="emoji-clue">${q.clue}</div>`;
+    builderEl.innerHTML = '';
 
-    resultBox.innerHTML = `✨ Relic Restored!<br/>Letter: <strong>${letter}</strong><br/>
-    <button onclick="(${init})({showMenu})">New Relic</button>`;
-  });
+    setupMCQ(q.options, q.answer, builderEl, (isCorrect) => {
+      if (isCorrect) {
+        resultEl.textContent = '✅ Correct! You unlocked a relic!';
+        awardXP(10);
+      } else {
+        resultEl.textContent = '❌ Try again or skip.';
+      }
+      currentIndex++;
+      setTimeout(() => {
+        resultEl.textContent = '';
+        showNextQuestion();
+      }, 1600);
+    });
+  }
+
+  showNextQuestion();
 }
-
