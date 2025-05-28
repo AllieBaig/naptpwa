@@ -1,89 +1,106 @@
-// MIT License – Copyright (c) 2025 AllieBaig
-// https://github.com/AllieBaig/naptpwa/blob/main/LICENSE
+/**
+ * Main Entrypoint for LingoQuestPWA.
+ * Dynamically loads mode + UI type based on URL query.
+ * Applies dark mode, loads profile, and starts game.
+ * Depends on: uiModeManager.js, profileManager.js, version.js
+ * MIT License: https://github.com/AllieBaig/LingoQuest/blob/main/LICENSE
+ * Timestamp: 2025-05-28 15:35 | File: scripts/main.js
+ */
 
-import { applyUserSettings } from './utils/settings.js';
-import { injectResetPWA } from './utils/debugTools.js';
-import { getLastMode } from './utils/autosave.js';
-import { navigateToMode } from './gameNavigation.js';
-import './utils/errorHandler.js';
+
+import { attachGlobalErrorHandler } from '../tools/errorLog.js';
+attachGlobalErrorHandler(); // Setup error logging globally
+
+import { applyUIMode } from './utils/uiModeManager.js';
+//import { applyUIMode } from './utils/uiModeManager.js';
+import { loadUserProfile } from '../tools/profileManager.js';
+import { initVersionDisplay } from './utils/version.js';
+import { updateXPDisplay } from './utils/xpTracker.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  applyUserSettings();
-  injectResetPWA();
+  // Read URL parameters
+  const params = new URLSearchParams(location.search);
+  const mode = params.get('mode') || 'solo';
+  const lang = params.get('lang') || 'fr';
+  const ui = params.get('ui') || 'normal';
 
-  const shouldResume = localStorage.getItem('napt-resume') === 'true';
-  const lastMode = getLastMode();
-  if (shouldResume && lastMode) {
-    navigateToMode(lastMode);
+  // Apply UI mode and dark mode settings
+  applyUIMode(ui);
+
+  // ------------Load and show user profile---------------
+  const profile = loadUserProfile();
+  document.querySelector('#userNickname').textContent = `👤 ${profile.nickname}`;
+  updateXPDisplay(profile.xp || 0);
+
+  // Display version info
+  initVersionDisplay();
+
+  // Dynamically import game mode
+  async function loadGameMode(mode, lang, ui) {
+    try {
+      if (ui === 'ascii') {
+        switch (mode) {
+          case 'mixlingo': {
+            const { initAsciiMixLingo } = await import('./ascii/lingoquest/mixlingo.js');
+            initAsciiMixLingo(lang);
+            break;
+          }
+          case 'wordrelic': {
+            const { initAsciiWordRelic } = await import('./ascii/lingoquest/wordrelic.js');
+            initAsciiWordRelic(lang);
+            break;
+          }
+          case 'solo':
+          default: {
+            const { initAsciiSolo } = await import('./ascii/lingoquest/solo.js');
+            initAsciiSolo(lang);
+            break;
+          }
+        }
+      } else {
+        switch (mode) {
+          case 'mixlingo': {
+            const { initMixLingo } = await import('./lingoquest/mixlingo.js');
+            initMixLingo(lang);
+            break;
+          }
+          case 'wordrelic': {
+            const { initWordRelic } = await import('./lingoquest/wordrelic.js');
+            initWordRelic(lang);
+            break;
+          }
+          case 'wordsafari': {
+            const { initWordSafari } = await import('./lingoquest/wordsafari.js');
+            initWordSafari(lang);
+            break;
+          }
+          case 'solo':
+          default: {
+            const { initSoloFR } = await import('./lingoquest/solo/fr.js');
+            initSoloFR();
+            break;
+          }
+        }
+      }
+    } catch (err) {
+      document.querySelector('#sentenceClue').textContent = '[⚠️ Error loading mode]';
+      console.error(err);
+    }
   }
 
-  // Font selector
-  const fontSelector = document.getElementById('fontSelector');
-  if (fontSelector) {
-    fontSelector.value = localStorage.getItem('napt-font') || '';
-    fontSelector.addEventListener('change', () => {
-      localStorage.setItem('napt-font', fontSelector.value);
-      location.reload();
+  // If no mode is passed, show the game selector
+  if (!params.has('mode')) {
+    document.querySelector('#modeSelectorPanel')?.classList.remove('hidden');
+    const buttons = document.querySelectorAll('#modeSelectorPanel button');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selectedMode = btn.dataset.mode;
+        const selectedLang = btn.dataset.lang;
+        const targetUrl = `?mode=${selectedMode}&lang=${selectedLang}&ui=${ui}`;
+        location.href = targetUrl;
+      });
     });
-  }
-
-  // Theme selector
-  const themeSelector = document.getElementById('themeSelector');
-  if (themeSelector) {
-    themeSelector.value = localStorage.getItem('napt-theme') || 'system';
-    themeSelector.addEventListener('change', () => {
-      localStorage.setItem('napt-theme', themeSelector.value);
-      location.reload();
-    });
-  }
-
-  // Emoji toggle
-  const emojiToggle = document.getElementById('emojiToggle');
-  if (emojiToggle) {
-    const current = localStorage.getItem('napt-use-emojis');
-    emojiToggle.checked = current !== 'false';
-    emojiToggle.addEventListener('change', () => {
-      localStorage.setItem('napt-use-emojis', emojiToggle.checked ? 'true' : 'false');
-      location.reload();
-    });
-  }
-
-  // High contrast toggle
-  const contrastToggle = document.getElementById('highContrastToggle');
-  if (contrastToggle) {
-    const stored = localStorage.getItem('napt-contrast') === 'true';
-    contrastToggle.checked = stored;
-    contrastToggle.addEventListener('change', () => {
-      localStorage.setItem('napt-contrast', contrastToggle.checked);
-      location.reload();
-    });
-  }
-
-  // Resume toggle
-  const resumeToggle = document.getElementById('resumeToggle');
-  if (resumeToggle) {
-    resumeToggle.checked = localStorage.getItem('napt-resume') === 'true';
-    resumeToggle.addEventListener('change', () => {
-      localStorage.setItem('napt-resume', resumeToggle.checked);
-    });
-  }
-
-  // Difficulty selector
-  const difficultySelector = document.getElementById('difficultySelector');
-  if (difficultySelector) {
-    difficultySelector.value = localStorage.getItem('napt-difficulty') || 'easy';
-    difficultySelector.addEventListener('change', () => {
-      localStorage.setItem('napt-difficulty', difficultySelector.value);
-    });
-  }
-
-  // Radius selector
-  const radiusSelector = document.getElementById('radiusSelector');
-  if (radiusSelector) {
-    radiusSelector.value = localStorage.getItem('napt-radius-km') || '10';
-    radiusSelector.addEventListener('change', () => {
-      localStorage.setItem('napt-radius-km', radiusSelector.value);
-    });
+  } else {
+    loadGameMode(mode, lang, ui); // ⬅ keep this line as-is
   }
 });
-
