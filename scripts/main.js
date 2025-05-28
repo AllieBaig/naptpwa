@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // If no mode is passed, show the game selector
+  // If no moder is passed, show the game selector
   if (!params.has('mode')) {
     document.querySelector('#modeSelectorPanel')?.classList.remove('hidden');
     const buttons = document.querySelectorAll('#modeSelectorPanel button');
